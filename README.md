@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🛠️ motochatz-ai - Setup & Development Guide
 
 Dokumentasi ini adalah panduan tunggal untuk menjalankan seluruh ekosistem **motochatz-ai** menggunakan Docker. Setiap anggota tim **WAJIB** mengikuti alur ini agar tidak ada lagi alasan "di laptop saya jalan, di laptop kamu enggak."
@@ -140,3 +141,6 @@ Jika kamu mau, aku bisa:
 2. Cek dan validasi `docker-compose.yml` sekarang agar bisa langsung `docker-compose up --build`.
 
 > **Catatan:** Beri tahu pilihanmu — aku bantu lanjutkan langkah berikutnya untuk memastikan semua anggota tim bisa jalankan proyek tanpa drama. ✅
+=======
+# motochatz-ai
+>>>>>>> 1da7f383699aa31cde7f4a4f92b3adf85ffc0584
