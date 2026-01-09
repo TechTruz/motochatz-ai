@@ -1,0 +1,9 @@
+# AI & Database
+GEMINI_API_KEY=your_key_here
+SUPABASE_URL=your_url
+SUPABASE_KEY=your_key
+MONGODB_URL=mongodb://root:password@mongodb:27017
+
+# MinIO
+MINIO_ROOT_USER=admin
+MINIO_ROOT_PASSWORD=password123
