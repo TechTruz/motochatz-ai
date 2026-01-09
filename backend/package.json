@@ -1,29 +1,42 @@
 {
-  "name": "motochatz-be",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "description": "",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "start": "node ./dist/server.js",
+    "start:dev": "nodemon --exec tsx src/server.ts --env-file=.env"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "dependencies": {
-    "express": "^4.21.1",
-    "mongoose": "^8.8.0",
-    "dotenv": "^16.4.5",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
-    "socket.io": "^4.8.1",
-    "minio": "^8.0.2",
-    "@supabase/supabase-js": "^2.46.1",
-    "morgan": "^1.10.0"
+    "express": "^5.2.1",
+    "helmet": "^8.1.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.9.0",
-    "@types/cors": "^2.8.17",
-    "@types/morgan": "^1.9.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3",
-    "nodemon": "^3.1.7"
+    "@eslint/js": "^9.39.2",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^17.0.0",
+    "jiti": "^2.6.1",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
   }
 }

@@ -1,0 +1,8 @@
+dist/
+coverage/
+*.json
+*.yml
+*.md
+docs/
+docker/
+

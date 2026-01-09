@@ -1,0 +1,24 @@
+# Global
+.vscode/
+*.swp
+.env
+.env.*
+!.env.example
+
+# Frontend & Backend
+node_modules/
+dist/
+build/
+.npm
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.mypy_cache/
+
