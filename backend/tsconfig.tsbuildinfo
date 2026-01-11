@@ -1,1 +1,1 @@
-{"root":["./src/app.ts","./src/server.ts"],"version":"5.9.3"}
+{"root":["./src/app.ts","./src/server.ts","./src/@types/environment.d.ts","./src/configs/database.ts","./src/configs/morganMiddleware.ts","./src/errors/BadRequestError.ts","./src/errors/CustomError.ts","./src/middlewares/errors.ts","./src/utils/logger.ts"],"version":"5.9.3"}

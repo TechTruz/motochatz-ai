@@ -4,6 +4,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import { errorHandler } from '@middlewares/errors.js';
 import Logger from '@utils/logger.js';
+import morganMiddleware from '@configs/morganMiddleware.js';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
@@ -19,6 +20,7 @@ app.use(
         credentials: true,
     })
 );
+app.use(morganMiddleware);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
