@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
-import { CustomError } from '@errors/CustomError.js';
 import { ZodError } from 'zod';
+import { CustomError } from '@errors/CustomError.js';
 import BadRequestError from '@errors/BadRequestError.js';
+import Logger from '@utils/logger.js';
 
 export const errorHandler = (
     err: Error,
@@ -27,7 +28,7 @@ export const errorHandler = (
         const { statusCode, errors, logging } = customError;
 
         if (logging) {
-            console.error(
+            Logger.debug(
                 JSON.stringify(
                     {
                         code: customError.statusCode,
@@ -43,7 +44,7 @@ export const errorHandler = (
         return res.status(statusCode).send({ errors });
     }
 
-    console.error(err);
+    Logger.error(err);
     res.status(500).send({
         errors: [
             {
