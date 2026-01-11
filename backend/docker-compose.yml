@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mongo:8.0-noble
+    restart: always
+    volumes:
+      - db_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/?authSource=motochatz --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  api:
+    build: .
+    image: motochatz-be
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URI: "mongodb://db:27017/motochatz"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  db_data:
+
