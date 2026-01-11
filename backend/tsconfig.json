@@ -24,11 +24,19 @@
       "@/*": [
         "src/*"
       ],
-      "@/configs/*": [
+      "@configs/*": [
         "src/configs/*"
-      ]
+      ],
+      "@errors/*": [
+        "src/errors/*"
+      ],
+      "@middlewares/*": [
+        "src/middlewares/*"
+      ],
       // "@/routes/*": ["src/routes/*"]
-      // "@/utils/*": ["src/utils/*"]
+      "@utils/*": [
+        "src/utils/*"
+      ]
     },
     // and npm install -D @types/node
     // Other Outputs
