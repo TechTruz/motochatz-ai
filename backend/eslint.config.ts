@@ -13,5 +13,15 @@ export default defineConfig([
         languageOptions: { globals: globals.node },
     },
     tseslint.configs.recommended,
+    {
+        // Override rules to ignore unused vars with "_" prefix
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_' },
+            ],
+            '@typescript-eslint/no-explicit-any': 'off',
+        },
+    },
     prettierConfig,
 ]);

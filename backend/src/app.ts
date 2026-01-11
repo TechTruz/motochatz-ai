@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import { errorHandler } from './middlewares/errors.js';
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 const app = express();
@@ -25,5 +26,6 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.get('/', (_req: Request, res: Response) => {
     res.status(200).send('Hello, World!');
 });
+app.use(errorHandler);
 
 export default app;
