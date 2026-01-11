@@ -9,7 +9,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "start": "node ./dist/server.js",
-    "start:dev": "nodemon --exec tsx src/server.ts --env-file=.env"
+    "start:dev": "nodemon --exec tsx --env-file=.env src/server.ts"
   },
   "keywords": [],
   "author": "",

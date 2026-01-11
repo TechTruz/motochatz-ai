@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
-const DATABASE_URI =
-    process.env.DATABASE_URI || 'mongodb://localhost:27017/motochatz';
+const DATABASE_URI = process.env.DATABASE_URI;
 
 export const connectDb = async () => {
     try {
