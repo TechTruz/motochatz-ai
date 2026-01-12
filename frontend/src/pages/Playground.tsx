@@ -1,0 +1,44 @@
+import { AppSidebar } from "@/components/AppSidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import ChatSection from "@/components/ChatSection";
+import PDFReaderSection from "@/components/PDFReaderSection";
+
+export default function Playground() {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset className="flex flex-col">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background z-10">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-xl font-semibold">
+                  Knowledge Management
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+            <ChatSection />
+            <PDFReaderSection />
+          </div>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
