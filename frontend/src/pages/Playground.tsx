@@ -6,7 +6,7 @@ import ChatSection from "@/components/ChatSection";
 import PDFReaderSection from "@/components/PDFReaderSection";
 
 export default function Playground() {
-  useDocumentTitle('Playground');
+  useDocumentTitle("Playground");
   return (
     <SidebarProvider>
       <AppSidebar />

@@ -47,7 +47,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
-  
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="pt-3 pb-5">
