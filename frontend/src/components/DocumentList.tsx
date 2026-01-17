@@ -42,7 +42,7 @@ const mockDocuments: Document[] = [
 
 export default function DocumentList() {
   return (
-    <Card className="bg-[#0F1729] border-gray-800">
+    <Card className="border-gray-800 bg-[#0F1729]">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl text-white">

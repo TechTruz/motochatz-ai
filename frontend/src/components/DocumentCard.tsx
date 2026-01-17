@@ -22,14 +22,14 @@ export default function DocumentCard({
   };
 
   return (
-    <Card className="bg-[#0F1729] border-gray-800 hover:border-gray-700 transition-colors">
+    <Card className="border-gray-800 bg-[#0F1729] transition-colors hover:border-gray-700">
       <div className="flex items-start gap-4 p-6">
-        <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center shrink-0">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-800">
           <FileText size={24} className="text-red-500" />
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="text-white font-medium mb-1 truncate">{fileName}</h3>
+        <div className="min-w-0 flex-1">
+          <h3 className="mb-1 truncate font-medium text-white">{fileName}</h3>
           <div className="flex items-center gap-3 text-sm text-gray-400">
             <span>{fileSize}</span>
             <span>•</span>

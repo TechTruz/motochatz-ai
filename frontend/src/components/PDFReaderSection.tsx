@@ -3,7 +3,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
 export default function PDFReaderSection() {
   return (
-    <Card className="bg-[#0F1729] border-gray-800 ">
+    <Card className="border-gray-800 bg-[#0F1729]">
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -19,7 +19,7 @@ export default function PDFReaderSection() {
         </div>
       </CardHeader>
       <PDFContent />
-      <CardFooter className="flex flex-col gap-4 ">
+      <CardFooter className="flex flex-col gap-4">
         <p className="text-gray-400">INTERNAL SANDBOX ENVIRONMENT</p>
       </CardFooter>
     </Card>

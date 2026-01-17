@@ -13,7 +13,7 @@ export default function KnowledgeBase() {
       <SidebarInset className="flex flex-col">
         <PageHeader title="Knowledge Management" />
         <main className="flex-1 overflow-y-auto p-7">
-          <div className="max-w-7xl mx-auto space-y-8">
+          <div className="mx-auto max-w-7xl space-y-8">
             <UploadSection />
             <DocumentList />
           </div>
