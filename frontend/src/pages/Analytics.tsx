@@ -11,7 +11,7 @@ export default function Analytics() {
       <SidebarInset className="flex flex-col">
         <PageHeader title="Analytics" />
         <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto space-y-8"></div>
+          <div className="mx-auto max-w-7xl space-y-8"></div>
         </main>
       </SidebarInset>
     </SidebarProvider>

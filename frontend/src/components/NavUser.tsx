@@ -11,14 +11,14 @@ export function NavUser({
   };
 }) {
   return (
-    <div className="flex items-center gap-2 cursor-pointer">
+    <div className="flex cursor-pointer items-center gap-2">
       <div className="text-right">
         <div className="text-sm font-medium">{user.name}</div>
-        <div className="text-xs text-muted-foreground">{user.role}</div>
+        <div className="text-muted-foreground text-xs">{user.role}</div>
       </div>
       <Avatar className="h-8 w-8 rounded-lg bg-blue-600">
         <AvatarImage src={user.avatar} alt={user.name} />
-        <AvatarFallback className="rounded-lg text-white font-semibold">
+        <AvatarFallback className="rounded-lg font-semibold text-white">
           {user.name
             .split(" ")
             .map((n) => n[0])

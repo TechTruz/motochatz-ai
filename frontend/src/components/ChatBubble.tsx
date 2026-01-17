@@ -22,29 +22,29 @@ export function ChatBubble({
   return (
     <div
       className={cn(
-        "flex w-full mb-4",
+        "mb-4 flex w-full",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       <div
         className={cn(
-          "max-w-[80%] p-4 rounded-2xl shadow-sm transition-all",
+          "max-w-[80%] rounded-2xl p-4 shadow-sm transition-all",
           isUser
-            ? "bg-blue-600 rounded-tr-none"
-            : "bg-[#0f121a] border border-gray-800 rounded-tl-none"
+            ? "rounded-tr-none bg-blue-600"
+            : "rounded-tl-none border border-gray-800 bg-[#0f121a]"
         )}
       >
-        <p className="text-sm text-white leading-relaxed">{content}</p>
+        <p className="text-sm leading-relaxed text-white">{content}</p>
 
-        <div className="flex items-center justify-between mt-2 gap-4">
-          <span className="text-[10px] text-slate-300 opacity-60 uppercase font-bold tabular-nums">
+        <div className="mt-2 flex items-center justify-between gap-4">
+          <span className="text-[10px] font-bold text-slate-300 uppercase tabular-nums opacity-60">
             {timestamp}
           </span>
 
           {pageReference && (
             <button
               onClick={() => onReferenceClick?.(pageReference)}
-              className="flex items-center gap-1 text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-blue-400 border border-slate-700 transition-colors active:scale-95"
+              className="flex items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[10px] text-blue-400 transition-colors hover:bg-slate-700 active:scale-95"
             >
               <ExternalLink size={10} />
               Hal. {pageReference}

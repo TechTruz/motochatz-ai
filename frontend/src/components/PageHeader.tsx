@@ -14,9 +14,9 @@ interface PageHeaderProps {
 
 export function PageHeader({ title }: PageHeaderProps) {
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-3 sticky top-0 bg-background z-10">
+    <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-3">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="cursor-pointer mr-1" />
+        <SidebarTrigger className="mr-1 cursor-pointer" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
