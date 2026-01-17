@@ -2,10 +2,7 @@
 
 import * as React from "react";
 import { type LucideIcon } from "lucide-react";
-import {
-  IconLogout,
-  IconUserCircle,
-} from "@tabler/icons-react";
+import { IconLogout, IconUserCircle } from "@tabler/icons-react";
 
 import {
   SidebarGroup,

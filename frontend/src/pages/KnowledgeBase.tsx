@@ -1,12 +1,12 @@
-import { AppSidebar } from '@/components/AppSidebar';
-import { PageHeader } from '@/components/PageHeader';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { useDocumentTitle } from '@/hooks/use-document-title';
-import UploadSection from '../components/UploadSection';
-import DocumentList from '../components/DocumentList';
+import { AppSidebar } from "@/components/AppSidebar";
+import { PageHeader } from "@/components/PageHeader";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { useDocumentTitle } from "@/hooks/use-document-title";
+import UploadSection from "../components/UploadSection";
+import DocumentList from "../components/DocumentList";
 
 export default function KnowledgeBase() {
-  useDocumentTitle('Knowledge Base');
+  useDocumentTitle("Knowledge Base");
   return (
     <SidebarProvider>
       <AppSidebar />

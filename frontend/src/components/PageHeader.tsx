@@ -1,12 +1,12 @@
-import { NavUser } from '@/components/NavUser';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
+import { NavUser } from "@/components/NavUser";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 
 interface PageHeaderProps {
   title: string;
@@ -29,12 +29,14 @@ export function PageHeader({ title }: PageHeaderProps) {
         </Breadcrumb>
       </div>
       <div className="mr-2">
-        <NavUser user={{
-          name: "Admin User",
-          email: "admin@motochatzai.com",
-          avatar: "",
-          role: "Superadmin"
-        }} />
+        <NavUser
+          user={{
+            name: "Admin User",
+            email: "admin@motochatzai.com",
+            avatar: "",
+            role: "Superadmin",
+          }}
+        />
       </div>
     </header>
   );
