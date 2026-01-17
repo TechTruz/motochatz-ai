@@ -48,7 +48,9 @@ export function LoginForm({
                 <Input id="password" type="password" required />
               </Field>
               <Field>
-                <Button type="submit" className="cursor-pointer">Login</Button>
+                <Button type="submit" className="cursor-pointer">
+                  Login
+                </Button>
               </Field>
               <FieldDescription className="text-center">
                 Don&apos;t have an account? <Link to="/register">Sign up</Link>
