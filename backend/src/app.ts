@@ -17,8 +17,21 @@ const app = express();
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.use(helmet());
-app.use(compression());
+app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path === '/events/stream') {
+        return next();
+    }
+
+    return helmet()(req, res, next);
+});
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path === '/events/stream') {
+        return next();
+    }
+
+    return compression()(req, res, next);
+});
 app.use(
     cors({
         origin: NODE_ENV !== 'production' ? '*' : CORS_ORIGIN.split(','),
@@ -43,6 +56,50 @@ app.get('/logger', (_req: Request, res: Response) => {
 });
 app.get('/internal-server-error', (_req: Request, _res: Response) => {
     throw Error('500 internal server error!');
+});
+app.get('/events/stream', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.flushHeaders();
+
+    const messageInterval = setInterval(() => {
+        const id = crypto.randomUUID();
+        const message = ['server', 'sent', 'events'][
+            Math.floor(Math.random() * 3)
+        ];
+
+        res.write(`event: message\n`);
+        res.write(`id: ${id}\n`);
+        res.write(`data: ${message}\n\n`);
+    }, 500);
+
+    const statusInterval = setInterval(() => {
+        const id = crypto.randomUUID();
+        const status = [
+            'INGESTING',
+            'CHUNKING',
+            'EMBEDDING',
+            'INDEXING',
+            'INDEXED',
+        ][Math.floor(Math.random() * 5)];
+        const data = {
+            status,
+            timestamp: new Date().toISOString(),
+        };
+
+        res.write(`event: status\n`);
+        res.write(`id: ${id}\n`);
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    }, 1500);
+
+    req.on('close', () => {
+        clearInterval(messageInterval);
+        clearInterval(statusInterval);
+        res.end();
+    });
 });
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
