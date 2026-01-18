@@ -2,24 +2,98 @@
 
 Version: 0.0.1 (Prototype)
 
-## REST Endpoints
+## Endpoints
 
-| Method | URL                             | Description                                        | Authentication | Authorization  | Link |
-| ------ | ------------------------------- | -------------------------------------------------- | -------------- | -------------- | ---- |
-| POST   | /api/upload/signed-url          | Get pre-signed url for uploading file              | True           | Admin          |      |
-| POST   | /api/upload/complete            | Send confirmation after completing the file upload | True           | Admin          |      |
-| GET    | /api/manuals                    | Get all manuals data                               | True           | Admin, Chatbot |      |
-| GET    | /api/manuals/:manualId          | Get a manual data                                  | True           | Admin, Chatbot |      |
-| GET    | /api/repair-shops               | Get all repair shops data                          | True           | Admin          |      |
-| GET    | /api/repair-shops/:repairShopId | Get a repair shop data                             | True           | Admin          |      |
-| POST   | /api/auth/register              | Create a new admin account and new repair shop     | True           | Admin          |      |
-| POST   | /api/auth/login                 | Login                                              | True           | Admin          |      |
-| GET    | /api/chats                      | Get all chats data                                 | True           | Admin, Chatbot |      |
-| GET    | /api/chats/:chatId              | Get a chat data                                    | True           | Admin, Chatbot |      |
+| Method | URL                       | Description                               | Authentication | Authorization | Link                          |
+| ------ | ------------------------- | ----------------------------------------- | -------------- | ------------- | ----------------------------- |
+| POST   | /api/auth/register        | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister) |
+| POST   | /api/auth/login           | Login                                     | True           | Admin         |                               |
+| GET    | /api/auth/refresh         | Get a new access token with refresh token | True           | Admin         |                               |
+| GET    | /api/documents/signed-url | Get a signed url to upload a document     | True           | Admin         |                               |
+| GET    | /api/stream/ingest        | Ingest a document (SSE)                   | True           | Admin         |                               |
+| POST   | /api/chats                | Create a new chat session with assistant  | True           | Admin         |                               |
+| POST   | /api/stream/chat          | Send a message to assistant (SSE)         | True           | Admin         |                               |
 
-## Websocket Channels
+### POST /api/auth/register
 
-| Channel   | Operation | Events      | Description                                             | Authentication | Authorization  | Link |
-| --------- | --------- | ----------- | ------------------------------------------------------- | -------------- | -------------- | ---- |
-| /ws/chats | publish   | sendMessage | Client sends a new message to the chat room             | True           | Admin, Chatbot |      |
-| /ws/chats | subscribe | newMessage  | Client receives a new message broadcast from the server | True           | Admin, Chatbot |      |
+Create a new admin account and a new garage.
+
+#### Request
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/auth/register`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+    ```js
+    {
+        "email": <string>,
+        "password": <string>,
+        "repeatPassword": <string>,
+        "firstName": <string>,
+        "lastName": <string> || null,
+        "garageName": <string>
+    }
+    ```
+
+#### Response
+
+- Code: `201`
+- Status: `Created`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+    ```js
+    {
+        "data": {
+            "id": <string>,
+            "email": <string>,
+            "firstName": <string>,
+            "lastName": <string> || null,
+            "garageId": <string>,
+            "garageName": <string>
+        }
+    }
+    ```
+
+#### Example
+
+- Request
+
+    ```http
+    POST http://localhost:3000/api/auth/register HTTP/1.1
+    Content-Type: application/json
+    ```
+
+    ```json
+    {
+        "email": "johndoe@mail.co",
+        "password": "Password123!!",
+        "repeatPassword": "Password123!!",
+        "firstName": "John",
+        "lastName": "Doe",
+        "garageName": "Bengkel Supraman"
+    }
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 201 Created
+    Content-Type: application/json
+    ```
+
+    ```json
+    {
+        "data": {
+            "id": "56fc40f9d735c28df206d078",
+            "email": "johndoe@mail.co",
+            "firstName": "John",
+            "lastName": "Doe",
+            "garageId": "56fc40f9d735c28df206d032",
+            "garageName": "Bengkel Supraman"
+        }
+    }
+    ```
+
+[Back to top](#endpoints)
