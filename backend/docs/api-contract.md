@@ -9,6 +9,7 @@ Version: 0.0.1 (Prototype)
 | POST   | /api/auth/register         | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister)       |
 | POST   | /api/auth/login            | Login                                     | True           | Admin         | [Link](#post-apiauthlogin)          |
 | POST   | /api/auth/refresh          | Get a new access token with refresh token | True           | Admin         | [Link](#post-apiauthrefresh)        |
+| DELETE | /api/auth/token            | Revoke refresh token and access token     | True           | Admin         | [Link](#delete-apiauthtoken)        |
 | GET    | /api/documents/signed-url  | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
 | GET    | /api/documents             | Get all documents                         | True           | Admin         |                                     |
 | GET    | /api/documents/:documentId | Get a specific document by id             | True           | Admin         |                                     |
@@ -210,6 +211,50 @@ Get a new access token with refresh token.
             "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
         }
     }
+    ```
+
+[Back to top](#endpoints)
+
+### DELETE /api/auth/token
+
+Revoke refresh token and access token.
+
+#### Request
+
+- Method: `DELETE`
+- URL: `http://localhost:3000/api/auth/token`
+- Headers:
+    - `Content-Type: application/json`
+    - `Authorization: Bearer <string>`
+- Body:
+    ```
+    {
+        "refreshToken": <string>
+    }
+    ```
+
+#### Response
+
+- Code: `204`
+- Status: `No Content`
+
+#### Example
+
+- Request
+
+    ```http
+    DELETE http://localhost:3000/api/auth/token HTTP/1.1
+    Content-Type: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+    {
+        "refreshToken": "8ed6a001-94f5-4241-b6db-c066f321ce4b"
+    }
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 204 No Content
     ```
 
 [Back to top](#endpoints)
