@@ -486,12 +486,12 @@ Ingest a document (SSE).
     Connection: keep-alive
     Transfer-Encoding: chunked
     X-Accel-Buffering: no
-    "event: "status"\nid: "5ff6f9e2-22d0-47b3-bdff-d21ea71a3166"\ndata: { "status": "PROCESSING", "timestamp": "2026-02-01T05:00:00.000Z" }\n\n"
-    "event: "status"\nid: "b94c9f13-d0d4-495d-8b83-2d39a409cf8a"\ndata: { "status": "INGESTING", "timestamp": "2026-02-01T05:00:33.132Z" }\n\n"
-    "event: "status"\nid: "0cf316c9-2786-4842-b961-7a8cbddf2abb"\ndata: { "status": "CHUNKING", "timestamp": "2026-02-01T05:00:41.009Z" }\n\n"
-    "event: "status"\nid: "6c4df984-31f5-42d6-b4ec-e64a41d4f09d"\ndata: { "status": "EMBEDDING", "timestamp": "2026-02-01T05:00:59.999Z" }\n\n"
-    "event: "status"\nid: "20662c03-84c0-4a1d-8d15-601e3569f39c"\ndata: { "status": "INDEXING", "timestamp": "2026-02-01T05:01:14.111Z" }\n\n"
-    "event: "status"\nid: "4fd9b8bd-27fc-41c2-9747-b7282e9d54e7"\ndata: { "status": "INDEXED", "timestamp": "2026-02-01T05:01:15.999Z" }\n\n"
+    "event: \"status\"\nid: \"5ff6f9e2-22d0-47b3-bdff-d21ea71a3166\"\ndata: { \"status\": \"PROCESSING\", \"timestamp\": \"2026-02-01T05:00:00.000Z\" }\n\n"
+    "event: \"status\"\nid: \"b94c9f13-d0d4-495d-8b83-2d39a409cf8a\"\ndata: { \"status\": \"INGESTING\", \"timestamp\": \"2026-02-01T05:00:33.132Z\" }\n\n"
+    "event: \"status\"\nid: \"0cf316c9-2786-4842-b961-7a8cbddf2abb\"\ndata: { \"status\": \"CHUNKING\", \"timestamp\": \"2026-02-01T05:00:41.009Z\" }\n\n"
+    "event: \"status\"\nid: \"6c4df984-31f5-42d6-b4ec-e64a41d4f09d\"\ndata: { \"status\": \"EMBEDDING\", \"timestamp\": \"2026-02-01T05:00:59.999Z\" }\n\n"
+    "event: \"status\"\nid: \"20662c03-84c0-4a1d-8d15-601e3569f39c\"\ndata: { \"status\": \"INDEXING\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"status\"\nid: \"4fd9b8bd-27fc-41c2-9747-b7282e9d54e7\"\ndata: { \"status\": \"INDEXED\", \"timestamp\": \"2026-02-01T05:01:15.999Z\" }\n\n"
     ```
 
 [Back to top](#endpoints)
