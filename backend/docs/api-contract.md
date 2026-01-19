@@ -13,7 +13,7 @@ Version: 0.0.1 (Prototype)
 | GET    | /api/documents/signed-url | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
 | GET    | /api/documents            | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |
 | GET    | /api/stream/ingest        | Ingest a document (SSE)                   | True           | Admin         | [Link](#get-apistreamingest)        |
-| GET    | /api/chats                | Get all chat session history              | True           | Admin         |                                     |
+| GET    | /api/chats                | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
 | GET    | /api/chats/:chatId        | Get a specific chat session with messages | True           | Admin         |                                     |
 | POST   | /api/chats                | Create a new chat session with assistant  | True           | Admin         |                                     |
 | POST   | /api/stream/chat          | Send a message to assistant (SSE)         | True           | Admin         |                                     |
@@ -492,6 +492,116 @@ Ingest a document (SSE).
     "event: \"status\"\nid: \"6c4df984-31f5-42d6-b4ec-e64a41d4f09d\"\ndata: { \"status\": \"EMBEDDING\", \"timestamp\": \"2026-02-01T05:00:59.999Z\" }\n\n"
     "event: \"status\"\nid: \"20662c03-84c0-4a1d-8d15-601e3569f39c\"\ndata: { \"status\": \"INDEXING\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
     "event: \"status\"\nid: \"4fd9b8bd-27fc-41c2-9747-b7282e9d54e7\"\ndata: { \"status\": \"INDEXED\", \"timestamp\": \"2026-02-01T05:01:15.999Z\" }\n\n"
+    ```
+
+[Back to top](#endpoints)
+
+---
+
+### GET /api/chats
+
+Get all chat session history.
+
+#### Request
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/chats`
+- Parameters:
+    - Query:
+        - `garageId=<string>`
+        - `userId=<string>` (optional, default to any user)
+        - `limit=<number>` (optional, default to `5`)
+        - `page=<number>` (optional, default to `1`)
+        - `status=<string>` (optional, default to `ALL`)
+            - `ALL` (default)
+            - `ONGOING`
+            - `ENDED`
+        - `sort=<string>` (optional, default to `id`)
+            - `id` (default)
+            - `-id`
+            - `createdAt`
+            - `-createdAt`
+            - `updatedAt`
+            - `-updatedAt`
+- Headers:
+    - `Authorization: Bearer <string>`
+
+#### Response
+
+- Code: `200`
+- Status: `OK`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+    ```
+    {
+        "data": [
+            {
+                "id": <string>,
+                "userId": <string>,
+                "userName": <string>,
+                "status": <string>,
+                "remainingQuota": <number>,
+                "createdAt": <date>,
+                "updatedAt": <date>
+            },
+            ...
+        ],
+        "pagination": {
+            "currentRecords": <number>,
+            "totalRecords": <number>,
+            "currentPage": <number>,
+            "totalPage": <number>,
+            "hasNextPage": <boolean>,
+            "hasPrevPage": <boolean>
+        }
+    }
+    ```
+
+#### Example
+
+- Request
+
+    ```http
+    GET http://localhost:3000/api/chats?garageId=56fc40f9d735c28df206d032 HTTP/1.1
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    {
+        "data": [
+            {
+                "id": "56fc40f9d735c28df206c674",
+                "userId": "56fc40f9d735c2fda54daf6d",
+                "userName": "John Doe",
+                "status": "ONGOING",
+                "remainingQuota": 3,
+                "createdAt": "2026-01-19T07:06:14.733Z",
+                "updatedAt": "2026-01-19T07:06:36.189Z"
+            },
+            {
+                "id": "e4fd657a4e544da7f54e7d57",
+                "userId": "dca2345a25c4ad2cda453add",
+                "userName": "Jane Dane",
+                "status": "ENDED",
+                "remainingQuota": 0,
+                "createdAt": "2026-01-19T07:12:23.697Z",
+                "updatedAt": "2026-01-19T07:14:39.584Z"
+            }
+        ],
+        "pagination": {
+            "currentRecords": 2,
+            "totalRecords": 2,
+            "currentPage": 1,
+            "totalPage": 1,
+            "hasNextPage": false,
+            "hasPrevPage": false
+        }
+    }
     ```
 
 [Back to top](#endpoints)
