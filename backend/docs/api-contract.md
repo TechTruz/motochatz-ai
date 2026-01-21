@@ -52,7 +52,7 @@ Create a new admin account and a new garage.
     ```
     {
         "data": {
-            "id": <string>,
+            "userId": <string>,
             "email": <string>,
             "firstName": <string>,
             "lastName": <string> | null,
@@ -86,7 +86,7 @@ Create a new admin account and a new garage.
     Content-Type: application/json
     {
         "data": {
-            "id": "56fc40f9d735c28df206d078",
+            "userId": "56fc40f9d735c28df206d078",
             "email": "johndoe@mail.co",
             "firstName": "John",
             "lastName": "Doe",
@@ -346,9 +346,9 @@ Get all documents.
             - `ALL` (default)
             - `UPLOADED`
             - `INDEXED`
-        - `sort=<string>` (optional, default to `id`)
-            - `id` (default)
-            - `-id`
+        - `sort=<string>` (optional, default to `documentId`)
+            - `documentId` (default)
+            - `-documentId`
             - `createdAt`
             - `-createdAt`
             - `updatedAt`
@@ -367,7 +367,7 @@ Get all documents.
     {
         "data": [
             {
-                "id": <string>,
+                "documentId": <string>,
                 "documentUrl": <string>,
                 "status": <string>,
                 "createdAt": <date>,
@@ -403,14 +403,14 @@ Get all documents.
     {
         "data": [
             {
-                "id": "56fc40f9d735c28df206d029",
+                "documentId": "56fc40f9d735c28df206d029",
                 "documentUrl": "https://motochatz.s3.ap-southeast-1.amazonaws.com/honda-blade-yamaha-125-r-1737033100000.pdf",
                 "status": "INDEXED",
                 "createdAt": "2026-02-26T09:59:45.001Z",
                 "updatedAt": "2026-02-26T11:01:04.123Z"
             },
             {
-                "id": "56fc40f9d735c28df206d045",
+                "documentId": "56fc40f9d735c28df206d045",
                 "documentUrl": "https://motochatz.s3.ap-southeast-1.amazonaws.com/toyota-avanza-15g-cvt-1976432816700.pdf",
                 "status": "UPLOADED",
                 "createdAt": "2026-01-26T09:59:45.001Z",
@@ -516,9 +516,9 @@ Get all chat session history.
             - `ALL` (default)
             - `ONGOING`
             - `ENDED`
-        - `sort=<string>` (optional, default to `id`)
-            - `id` (default)
-            - `-id`
+        - `sort=<string>` (optional, default to `chatId`)
+            - `chatId` (default)
+            - `-chatId`
             - `createdAt`
             - `-createdAt`
             - `updatedAt`
@@ -537,7 +537,7 @@ Get all chat session history.
     {
         "data": [
             {
-                "id": <string>,
+                "chatId": <string>,
                 "userId": <string>,
                 "userFirstName": <string>,
                 "userLastName": <string> | null,
@@ -576,7 +576,7 @@ Get all chat session history.
     {
         "data": [
             {
-                "id": "56fc40f9d735c28df206c674",
+                "chatId": "56fc40f9d735c28df206c674",
                 "userId": "56fc40f9d735c2fda54daf6d",
                 "userFirstName": "John",
                 "userLastName": "Doe",
@@ -586,7 +586,7 @@ Get all chat session history.
                 "updatedAt": "2026-01-19T07:06:36.189Z"
             },
             {
-                "id": "e4fd657a4e544da7f54e7d57",
+                "chatId": "e4fd657a4e544da7f54e7d57",
                 "userId": "dca2345a25c4ad2cda453add",
                 "userFirstName": "Jane",
                 "userLastName": null,
@@ -644,7 +644,7 @@ Get messages from specific chat session.
     {
         "data": [
             {
-                "id": <string>,
+                "messageId": <string>,
                 "role": "ASSISTANT" | {
                     "userId": <string>,
                     "userFirstName": <string>,
@@ -692,7 +692,7 @@ Get messages from specific chat session.
     {
         "data": [
             {
-                "id": "6970755dad814745c68ce5b0",
+                "messageId": "6970755dad814745c68ce5b0",
                 "role": {
                     "userId": "6970756ee3d1d377ce8ce5b0",
                     "userFirstName": "John",
@@ -703,7 +703,7 @@ Get messages from specific chat session.
                 "updatedAt": "2026-01-21T06:51:46.826Z"
             },
             {
-                "id": "6970764e37d24577fe8ce5b0",
+                "messageId": "6970764e37d24577fe8ce5b0",
                 "role": "ASSISTANT",
                 "message": "Alright, let’s narrow this down step by step.\nBased on the symptoms (check engine light, low power, high fuel usage) on a Toyota Avanza 2019, the most common causes are:\n1. Faulty oxygen (O2) sensor\nThis causes incorrect air–fuel mixture readings, leading to rich fuel conditions.\n2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.",
                 "referencedDocuments": [
