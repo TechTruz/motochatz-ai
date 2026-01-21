@@ -15,7 +15,7 @@ Version: 0.0.1 (Prototype)
 | GET    | /api/stream/ingest          | Ingest a document (SSE)                   | True           | Admin         | [Link](#get-apistreamingest)        |
 | GET    | /api/chats                  | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
 | GET    | /api/chats/:chatId/messages | Get messages from specific chat session   | True           | Admin         | [Link](#get-apichatschatidmessages) |
-| POST   | /api/chats                  | Create a new chat session with assistant  | True           | Admin         |                                     |
+| POST   | /api/chats                  | Create a new chat session with assistant  | True           | Admin         | [Link](#post-apichats)              |
 | POST   | /api/stream/chat            | Send a message to assistant (SSE)         | True           | Admin         |                                     |
 
 ---
@@ -724,6 +724,57 @@ Get messages from specific chat session.
             "sort": "-createdAt",
             "hasNextPage": false,
             "hasPrevPage": false
+        }
+    }
+    ```
+
+[Back to top](#endpoints)
+
+---
+
+### POST /api/chats
+
+Create a new chat session with assistant.
+
+#### Request
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/chats`
+- Headers:
+    - `Authorization: Bearer <string>`
+
+#### Response
+
+- Code: `201`
+- Status: `Created`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+    ```
+    {
+        "data": {
+            "chatId": <string>
+        }
+    }
+    ```
+
+#### Example
+
+- Request
+
+    ```http
+    POST http://localhost:3000/api/chats HTTP/1.1
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 201 Created
+    Content-Type: application/json
+    {
+        "data": {
+            "chatId": "6970f5b1e6a560b7d28ce5b0"
         }
     }
     ```
