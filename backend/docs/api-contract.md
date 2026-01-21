@@ -4,19 +4,19 @@ Version: 0.0.1 (Prototype)
 
 ## Endpoints
 
-| Method | URL                       | Description                               | Authentication | Authorization | Link                                |
-| ------ | ------------------------- | ----------------------------------------- | -------------- | ------------- | ----------------------------------- |
-| POST   | /api/auth/register        | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister)       |
-| POST   | /api/auth/login           | Login                                     | True           | Admin         | [Link](#post-apiauthlogin)          |
-| POST   | /api/auth/refresh         | Get a new access token with refresh token | True           | Admin         | [Link](#post-apiauthrefresh)        |
-| DELETE | /api/auth/token           | Revoke refresh token and access token     | True           | Admin         | [Link](#delete-apiauthtoken)        |
-| GET    | /api/documents/signed-url | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
-| GET    | /api/documents            | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |
-| GET    | /api/stream/ingest        | Ingest a document (SSE)                   | True           | Admin         | [Link](#get-apistreamingest)        |
-| GET    | /api/chats                | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
-| GET    | /api/chats/:chatId        | Get a specific chat session with messages | True           | Admin         |                                     |
-| POST   | /api/chats                | Create a new chat session with assistant  | True           | Admin         |                                     |
-| POST   | /api/stream/chat          | Send a message to assistant (SSE)         | True           | Admin         |                                     |
+| Method | URL                         | Description                               | Authentication | Authorization | Link                                |
+| ------ | --------------------------- | ----------------------------------------- | -------------- | ------------- | ----------------------------------- |
+| POST   | /api/auth/register          | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister)       |
+| POST   | /api/auth/login             | Login                                     | True           | Admin         | [Link](#post-apiauthlogin)          |
+| POST   | /api/auth/refresh           | Get a new access token with refresh token | True           | Admin         | [Link](#post-apiauthrefresh)        |
+| DELETE | /api/auth/token             | Revoke refresh token and access token     | True           | Admin         | [Link](#delete-apiauthtoken)        |
+| GET    | /api/documents/signed-url   | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
+| GET    | /api/documents              | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |
+| GET    | /api/stream/ingest          | Ingest a document (SSE)                   | True           | Admin         | [Link](#get-apistreamingest)        |
+| GET    | /api/chats                  | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
+| GET    | /api/chats/:chatId/messages | Get messages from specific chat session   | True           | Admin         |                                     |
+| POST   | /api/chats                  | Create a new chat session with assistant  | True           | Admin         |                                     |
+| POST   | /api/stream/chat            | Send a message to assistant (SSE)         | True           | Admin         |                                     |
 
 ---
 
@@ -37,7 +37,7 @@ Create a new admin account and a new garage.
         "password": <string>,
         "repeatPassword": <string>,
         "firstName": <string>,
-        "lastName": <string> || null,
+        "lastName": <string> | null,
         "garageName": <string>
     }
     ```
@@ -55,7 +55,7 @@ Create a new admin account and a new garage.
             "id": <string>,
             "email": <string>,
             "firstName": <string>,
-            "lastName": <string> || null,
+            "lastName": <string> | null,
             "garageId": <string>,
             "garageName": <string>
         }
@@ -539,7 +539,8 @@ Get all chat session history.
             {
                 "id": <string>,
                 "userId": <string>,
-                "userName": <string>,
+                "userFirstName": <string>,
+                "userLastName": <string> | null,
                 "status": <string>,
                 "remainingQuota": <number>,
                 "createdAt": <date>,
@@ -577,7 +578,8 @@ Get all chat session history.
             {
                 "id": "56fc40f9d735c28df206c674",
                 "userId": "56fc40f9d735c2fda54daf6d",
-                "userName": "John Doe",
+                "userFirstName": "John",
+                "userLastName": "Doe",
                 "status": "ONGOING",
                 "remainingQuota": 3,
                 "createdAt": "2026-01-19T07:06:14.733Z",
@@ -586,7 +588,8 @@ Get all chat session history.
             {
                 "id": "e4fd657a4e544da7f54e7d57",
                 "userId": "dca2345a25c4ad2cda453add",
-                "userName": "Jane Dane",
+                "userFirstName": "Jane",
+                "userLastName": null,
                 "status": "ENDED",
                 "remainingQuota": 0,
                 "createdAt": "2026-01-19T07:12:23.697Z",
@@ -598,6 +601,127 @@ Get all chat session history.
             "totalRecords": 2,
             "currentPage": 1,
             "totalPage": 1,
+            "hasNextPage": false,
+            "hasPrevPage": false
+        }
+    }
+    ```
+
+[Back to top](#endpoints)
+
+---
+
+### GET /api/chats/:chatId/messages
+
+Get messages from specific chat session.
+
+#### Request
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/chats/:chatId/messages`
+- Parameters:
+    - Path:
+        - `chatId`: `<string>`
+    - Query:
+        - `limit=<number>` (optional, default to `10`)
+        - `cursor=<string>` (optional, value of `messageId`)
+        - `sort=<string>` (optional, default to `-createdAt`)
+            - `createdAt`
+            - `-createdAt` (default)
+            - `updatedAt`
+            - `-updatedAt`
+- Headers:
+    - `Authorization: Bearer <string>`
+
+#### Response
+
+- Code: `200`
+- Status: `OK`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+    ```
+    {
+        "data": [
+            {
+                "id": <string>,
+                "role": "ASSISTANT" | {
+                    "userId": <string>,
+                    "userFirstName": <string>,
+                    "userLastName": <string> | null
+                },
+                "message": <string>,
+                "referencedDocuments": [
+                    {
+                        "documentId": <string>,
+                        "documentUrl": <string
+                    },
+                    ...
+                ],
+                "createdAt": <date>,
+                "updatedAt": <date>
+            },
+            ...
+        ],
+        "pagination": {
+            "currentRecords": <number>,
+            "totalRecords": <number>,
+            "latestCursor": <string>,
+            "oldestCursor": <string>,
+            "sort": <string>,
+            "hasNextPage": <boolean>,
+            "hasPrevPage": <boolean>
+        }
+    }
+    ```
+
+#### Example
+
+- Request
+
+    ```http
+    GET http://localhost:3000/api/chats/56fc40f9d735c28df206c674/messages HTTP/1.1
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    {
+        "data": [
+            {
+                "id": "6970755dad814745c68ce5b0",
+                "role": {
+                    "userId": "6970756ee3d1d377ce8ce5b0",
+                    "userFirstName": "John",
+                    "userLastName": "Doe"
+                },
+                "message": "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual.",
+                "createdAt": "2026-01-21T06:51:46.826Z",
+                "updatedAt": "2026-01-21T06:51:46.826Z"
+            },
+            {
+                "id": "6970764e37d24577fe8ce5b0",
+                "role": "ASSISTANT",
+                "message": "Alright, let’s narrow this down step by step.\nBased on the symptoms (check engine light, low power, high fuel usage) on a Toyota Avanza 2019, the most common causes are:\n1. Faulty oxygen (O2) sensor\nThis causes incorrect air–fuel mixture readings, leading to rich fuel conditions.\n2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.",
+                "referencedDocuments": [
+                    {
+                        "documentId": "56fc40f9d735c28df206d029",
+                        "documentUrl": "https://motochatz.s3.ap-southeast-1.amazonaws.com/honda-blade-yamaha-125-r-1737033100000.pdf"
+                    }
+                ],
+                "createdAt": "2026-01-21T06:53:00.001Z",
+                "updatedAt": "2026-01-21T06:53:00.001Z"
+            }
+        ],
+        "pagination": {
+            "currentRecords": 2,
+            "totalRecords": 2,
+            "latestCursor": "6970764e37d24577fe8ce5b0",
+            "oldestCursor": "6970755dad814745c68ce5b0",
+            "sort": "-createdAt",
             "hasNextPage": false,
             "hasPrevPage": false
         }
