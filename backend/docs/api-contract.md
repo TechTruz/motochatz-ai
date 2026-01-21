@@ -863,7 +863,7 @@ Send a message to assistant (SSE).
     "event: \"message\"\nid: \"0b32e45d-8c69-4b6e-ad73-157831e95cb0\"\ndata: { \"message\": \"2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
     "event: \"message\"\nid: \"4a59a673-936a-4d4d-9557-9934378bade1\"\ndata: { \"message\": \"3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
     "event: \"message\"\nid: \"f4f1c6ce-24e4-4477-8c6d-8bd6fecb2ad5\"\ndata: [DONE]\n\n"
-    "event: \"status\"\nid: \"4fd9b8bd-27fc-41c2-9747-b7282e9d54e7\"\ndata: { \"status\": \"ANSWERED\", \"timestamp\": \"2026-02-01T05:01:15.999Z\" }\n\n"
+    "event: \"status\"\nid: \"4fd9b8bd-27fc-41c2-9747-b7282e9d54e7\"\ndata: { \"status\": \"ANSWERED\", \"timestamp\": \"2026-02-01T05:01:15.999Z\", \"referencedDocuments\": [{ \"documentId\": \"56fc40f9d735c28df206d029\", \"documentUrl\": \"https://motochatz.s3.ap-southeast-1.amazonaws.com/honda-blade-yamaha-125-r-1737033100000.pdf\" }] }\n\n"
     ```
 
 [Back to top](#endpoints)
