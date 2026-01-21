@@ -369,7 +369,7 @@ Get all documents.
             {
                 "documentId": <string>,
                 "documentUrl": <string>,
-                "status": <string>,
+                "status": "ALL" | "UPLOADED" | "INDEXED",
                 "createdAt": <date>,
                 "updatedAt": <date>
             },
@@ -541,7 +541,7 @@ Get all chat session history.
                 "userId": <string>,
                 "userFirstName": <string>,
                 "userLastName": <string> | null,
-                "status": <string>,
+                "status": "ALL" | "ONGOING" | "ENDED",
                 "remainingQuota": <number>,
                 "createdAt": <date>,
                 "updatedAt": <date>
@@ -668,7 +668,7 @@ Get messages from specific chat session.
             "totalRecords": <number>,
             "latestCursor": <string>,
             "oldestCursor": <string>,
-            "sort": <string>,
+            "sort": "createdAt" | "-createdAt" | "updatedAt" | "-updatedAt",
             "hasNextPage": <boolean>,
             "hasPrevPage": <boolean>
         }
