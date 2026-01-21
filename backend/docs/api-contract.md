@@ -840,7 +840,7 @@ Send a message to assistant (SSE).
     Content-Type: application/json
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
     {
-        message: "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual."
+        "message": "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual."
     }
     ```
 
