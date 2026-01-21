@@ -14,7 +14,7 @@ Version: 0.0.1 (Prototype)
 | GET    | /api/documents              | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |
 | GET    | /api/stream/ingest          | Ingest a document (SSE)                   | True           | Admin         | [Link](#get-apistreamingest)        |
 | GET    | /api/chats                  | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
-| GET    | /api/chats/:chatId/messages | Get messages from specific chat session   | True           | Admin         |                                     |
+| GET    | /api/chats/:chatId/messages | Get messages from specific chat session   | True           | Admin         | [Link](#get-apichatschatidmessages) |
 | POST   | /api/chats                  | Create a new chat session with assistant  | True           | Admin         |                                     |
 | POST   | /api/stream/chat            | Send a message to assistant (SSE)         | True           | Admin         |                                     |
 
