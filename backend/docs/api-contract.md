@@ -16,7 +16,7 @@ Version: 0.0.1 (Prototype)
 | GET    | /api/chats                  | Get all chat session history              | True           | Admin         | [Link](#get-apichats)               |
 | GET    | /api/chats/:chatId/messages | Get messages from specific chat session   | True           | Admin         | [Link](#get-apichatschatidmessages) |
 | POST   | /api/chats                  | Create a new chat session with assistant  | True           | Admin         | [Link](#post-apichats)              |
-| POST   | /api/stream/chat            | Send a message to assistant (SSE)         | True           | Admin         |                                     |
+| POST   | /api/stream/chat            | Send a message to assistant (SSE)         | True           | Admin         | [Link](#post-apistreamchat)         |
 
 ---
 
@@ -777,6 +777,93 @@ Create a new chat session with assistant.
             "chatId": "6970f5b1e6a560b7d28ce5b0"
         }
     }
+    ```
+
+[Back to top](#endpoints)
+
+---
+
+### POST /api/stream/chat
+
+Send a message to assistant (SSE).
+
+#### Request
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/stream/chat`
+- Parameters:
+    - Query:
+        - `chatId=<string>`
+- Headers:
+    - `Content-Type: application/json`
+    - `Authorization: Bearer <string>`
+- Body:
+    ```
+    {
+        "message": <string>
+    }
+    ```
+
+#### Response
+
+- Code: `200`
+- Status: `OK`
+- Headers:
+    - `Content-Type: text/event-stream; charset=utf-8`
+    - `Cache-Control: no-cache`
+    - `Connection: keep-alive`
+    - `Transfer-Encoding: chunked`
+    - `X-Accel-Buffering: no`
+- Events:
+    - `status`
+        - `"id: <string>\n"`
+        - `"data: { "status": <string>, "timestamp": <date> }\n\n"`
+            - `status`
+                - `ENCODING QUERY`
+                - `RETRIEVING KNOWLEDGE`
+                - `AUGMENTING`
+                - `GENERATING ANSWER`
+                - `ANSWERED`
+                    > this status has additional field `referencedDocuments`, an array with objects of document.\
+                    >  `"data: { "status": <string>, "timestamp": <date>, "referencedDocuments": [{ "documentId": <string>, "documentUrl": <string> }, ... ] }\n\n"`
+    - `message`
+        - `"id: <string>\n"`
+        - `"data: { "content": <string>, "timestamp": <date> }\n\n"`
+            > stream ends with `"data: [DONE]\n\n"`
+
+#### Example
+
+- Request
+
+    ```http
+    POST http://localhost:3000/api/stream/chat?chatId=6970fda1fc78f951ee8ce5b0 HTTP/1.1
+    Content-Type: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+    {
+        message: "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual."
+    }
+    ```
+
+- Response
+
+    ```http
+    HTTP/1.1 200 OK
+    Content-Type: text/event-stream; charset=utf-8
+    Cache-Control: no-cache
+    Connection: keep-alive
+    Transfer-Encoding: chunked
+    X-Accel-Buffering: no
+    "event: \"status\"\nid: \"5ff6f9e2-22d0-47b3-bdff-d21ea71a3166\"\ndata: { \"status\": \"ENCODING QUERY\", \"timestamp\": \"2026-02-01T05:00:00.000Z\" }\n\n"
+    "event: \"status\"\nid: \"b94c9f13-d0d4-495d-8b83-2d39a409cf8a\"\ndata: { \"status\": \"RETRIEVING KNOWLEDGE\", \"timestamp\": \"2026-02-01T05:00:33.132Z\" }\n\n"
+    "event: \"status\"\nid: \"0cf316c9-2786-4842-b961-7a8cbddf2abb\"\ndata: { \"status\": \"AUGMENTING\", \"timestamp\": \"2026-02-01T05:00:41.009Z\" }\n\n"
+    "event: \"status\"\nid: \"6c4df984-31f5-42d6-b4ec-e64a41d4f09d\"\ndata: { \"status\": \"GENERATING ANSWER\", \"timestamp\": \"2026-02-01T05:00:59.999Z\" }\n\n"
+    "event: \"message\"\nid: \"20662c03-84c0-4a1d-8d15-601e3569f39c\"\ndata: { \"message\": \"Alright, let’s narrow this down step by step.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"message\"\nid: \"4487d926-1856-4443-9033-5da2e078e603\"\ndata: { \"message\": \"Based on the symptoms (check engine light, low power, high fuel usage) on a Toyota Avanza 2019, the most common causes are:\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"message\"\nid: \"6bd75809-29d7-457a-a0e0-0500b9ffc1f6\"\ndata: { \"message\": \"1. Faulty oxygen (O2) sensor\nThis causes incorrect air–fuel mixture readings, leading to rich fuel conditions.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"message\"\nid: \"0b32e45d-8c69-4b6e-ad73-157831e95cb0\"\ndata: { \"message\": \"2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"message\"\nid: \"4a59a673-936a-4d4d-9557-9934378bade1\"\ndata: { \"message\": \"3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.\n\", \"timestamp\": \"2026-02-01T05:01:14.111Z\" }\n\n"
+    "event: \"message\"\nid: \"f4f1c6ce-24e4-4477-8c6d-8bd6fecb2ad5\"\ndata: [DONE]\n\n"
+    "event: \"status\"\nid: \"4fd9b8bd-27fc-41c2-9747-b7282e9d54e7\"\ndata: { \"status\": \"ANSWERED\", \"timestamp\": \"2026-02-01T05:01:15.999Z\" }\n\n"
     ```
 
 [Back to top](#endpoints)
