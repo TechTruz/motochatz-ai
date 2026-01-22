@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import { registerController } from '@controllers/auth.controller.js';
-import { validateData } from '@middlewares/validationMiddleware.js';
-import { registerSchema } from '@schemas/auth.schema.js';
 
 /**
  * @todo Implement all the routes
@@ -12,7 +10,7 @@ import { registerSchema } from '@schemas/auth.schema.js';
  */
 const router = Router();
 
-router.post('/register', validateData(registerSchema), registerController);
+router.post('/register', registerController);
 // router.post('/login');
 // router.post('/refresh');
 // router.delete('/token');

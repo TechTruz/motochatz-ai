@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-export const registerSchema: z.ZodObject = z
+export const RegisterSchema: z.ZodObject = z
     .object({
         email: z.email(),
         password: z.string().min(8).max(64),
@@ -18,3 +18,5 @@ export const registerSchema: z.ZodObject = z
             });
         }
     });
+
+export type RegisterBody = z.infer<typeof RegisterSchema>;
