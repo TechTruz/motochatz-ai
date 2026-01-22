@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const validateData = (
     schema: z.ZodObject<any, any>,

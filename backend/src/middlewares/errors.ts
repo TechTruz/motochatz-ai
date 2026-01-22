@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import { ZodError } from 'zod';
+import * as z from 'zod';
 import { CustomError } from '@errors/CustomError.js';
 import BadRequestError from '@errors/BadRequestError.js';
 import Logger from '@utils/logger.js';
@@ -12,7 +12,7 @@ export const errorHandler = (
 ) => {
     let customError: Error = err;
 
-    if (err instanceof ZodError) {
+    if (err instanceof z.ZodError) {
         const errorContents = err.issues.map((issue) => ({
             message: issue.message,
             context: { path: issue.path },
