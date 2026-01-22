@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const validateData = (
     schema: z.ZodObject<any, any>,
-    paramName: 'body' | 'query' | 'params'
+    paramName: 'body' | 'query' | 'params' = 'body'
 ) => {
     return (req: Request, _res: Response, next: NextFunction) => {
         schema.parse(req[paramName]);

@@ -37,6 +37,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-zod": "^3.0.2",
     "globals": "^17.0.0",
     "jiti": "^2.6.1",
     "nodemon": "^3.1.11",
