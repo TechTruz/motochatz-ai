@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import eslintPluginZod from 'eslint-plugin-zod';
 
 export default defineConfig([
     {
@@ -13,5 +14,16 @@ export default defineConfig([
         languageOptions: { globals: globals.node },
     },
     tseslint.configs.recommended,
+    eslintPluginZod.configs.recommended,
+    {
+        // Override rules to ignore unused vars with "_" prefix
+        rules: {
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_' },
+            ],
+            '@typescript-eslint/no-explicit-any': 'off',
+        },
+    },
     prettierConfig,
 ]);

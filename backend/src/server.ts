@@ -1,7 +1,14 @@
 import app from '@/app.js';
+import { connectDb } from '@configs/database.js';
+import Logger from '@utils/logger.js';
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || '3000';
 
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
-});
+const initServer = async () => {
+    await connectDb();
+    app.listen(PORT, async () => {
+        Logger.info(`Server is listening on port ${PORT}`);
+    });
+};
+
+initServer();

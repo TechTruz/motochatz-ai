@@ -1,0 +1,33 @@
+import { CustomError } from '@errors/CustomError.js';
+
+export default class ContentTooLargeError extends CustomError {
+    private static readonly _statusCode = 413;
+    private readonly _code: number;
+    private readonly _logging: boolean;
+
+    constructor(params?: {
+        code?: number;
+        message?: string;
+        logging?: boolean;
+    }) {
+        const { code, message, logging } = params || {};
+
+        super(message || 'Content Too Large');
+        this._code = code || ContentTooLargeError._statusCode;
+        this._logging = logging || false;
+
+        Object.setPrototypeOf(this, ContentTooLargeError.prototype);
+    }
+
+    get errors() {
+        return [{ message: this.message }];
+    }
+
+    get statusCode() {
+        return this._code;
+    }
+
+    get logging() {
+        return this._logging;
+    }
+}
