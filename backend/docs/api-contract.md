@@ -57,7 +57,9 @@ Create a new admin account and a new garage.
             "firstName": <string>,
             "lastName": <string> | null,
             "garageId": <string>,
-            "garageName": <string>
+            "garageName": <string>,
+            "createdAt": <date>,
+            "updatedAt": <date>
         }
     }
     ```
@@ -91,7 +93,9 @@ Create a new admin account and a new garage.
             "firstName": "John",
             "lastName": "Doe",
             "garageId": "56fc40f9d735c28df206d032",
-            "garageName": "Bengkel Supraman"
+            "garageName": "Bengkel Supraman",
+            "createdAt": "2026-02-02T19:09:29.001Z",
+            "updatedAt": "2026-02-02T19:09:29.001Z"
         }
     }
     ```
