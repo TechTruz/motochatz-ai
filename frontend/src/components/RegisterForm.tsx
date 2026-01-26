@@ -9,15 +9,39 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useRegister } from "@/hooks/use-auth";
+import { useTogglePassword } from "@/hooks/use-toggle-password";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const passwordVisibility = useTogglePassword();
+  const confirmPasswordVisibility = useTogglePassword();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [garageName, setGarageName] = useState("");
+
+  const { mutate: register, isPending } = useRegister();
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    register({
+      email,
+      password,
+      repeatPassword: confirmPassword,
+      firstName,
+      lastName: lastName || null,
+      garageName,
+    });
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -30,7 +54,7 @@ export function RegisterForm({
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create an account</h1>
@@ -39,8 +63,27 @@ export function RegisterForm({
                 </p>
               </div>
               <Field className="gap-1">
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <Input id="name" type="text" placeholder="Your Name" required />
+                <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  disabled={isPending}
+                  required
+                />
+              </Field>
+              <Field className="gap-1">
+                <FieldLabel htmlFor="lastName">Last Name (Optional)</FieldLabel>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  disabled={isPending}
+                />
               </Field>
               <Field className="gap-1">
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -48,6 +91,21 @@ export function RegisterForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isPending}
+                  required
+                />
+              </Field>
+              <Field className="gap-1">
+                <FieldLabel htmlFor="garageName">Garage Name</FieldLabel>
+                <Input
+                  id="garageName"
+                  type="text"
+                  placeholder="Bengkel Supraman"
+                  value={garageName}
+                  onChange={(e) => setGarageName(e.target.value)}
+                  disabled={isPending}
                   required
                 />
               </Field>
@@ -56,16 +114,20 @@ export function RegisterForm({
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    type={passwordVisibility.showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isPending}
                     required
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={passwordVisibility.togglePassword}
                     className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer transition-colors"
+                    disabled={isPending}
                   >
-                    {showPassword ? (
+                    {passwordVisibility.showPassword ? (
                       <EyeOff className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
@@ -80,16 +142,24 @@ export function RegisterForm({
                 <div className="relative">
                   <Input
                     id="confirm-password"
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={
+                      confirmPasswordVisibility.showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isPending}
                     required
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    onClick={confirmPasswordVisibility.togglePassword}
                     className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer transition-colors"
+                    disabled={isPending}
                   >
-                    {showConfirmPassword ? (
+                    {confirmPasswordVisibility.showPassword ? (
                       <EyeOff className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
@@ -98,8 +168,19 @@ export function RegisterForm({
                 </div>
               </Field>
               <Field>
-                <Button type="submit" className="cursor-pointer">
-                  Register
+                <Button
+                  type="submit"
+                  className="cursor-pointer"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Registering...
+                    </>
+                  ) : (
+                    "Register"
+                  )}
                 </Button>
               </Field>
               <FieldDescription className="text-center">
