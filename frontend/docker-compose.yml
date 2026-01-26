@@ -1,0 +1,20 @@
+services:
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: motochatz-frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+    networks:
+      - motochatz-network
+    restart: unless-stopped
+
+networks:
+  motochatz-network:
+    driver: bridge
