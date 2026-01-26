@@ -1,11 +1,18 @@
-import { Button } from "@/components/ui/button"
-
+import { Route, Routes, Navigate } from "react-router";
+import Dashboard from "./pages/KnowledgeBase";
+import Playground from "./pages/Playground";
+import Analytics from "./pages/Analytics";
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
-  )
+    <>
+      <Routes>
+        <Route path="/" element={<Navigate to="/knowledge-base" replace />} />
+        <Route path="/knowledge-base" element={<Dashboard />} />
+        <Route path="/playground" element={<Playground />} />
+        <Route path="/analytics" element={<Analytics />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;
