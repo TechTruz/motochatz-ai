@@ -27,13 +27,30 @@
       "@configs/*": [
         "src/configs/*"
       ],
+      "@controllers/*": [
+        "src/controllers/*"
+      ],
+      "@dtos/*": [
+        "src/dtos/*"
+      ],
       "@errors/*": [
         "src/errors/*"
       ],
       "@middlewares/*": [
         "src/middlewares/*"
       ],
-      // "@/routes/*": ["src/routes/*"]
+      "@models/*": [
+        "src/models/*"
+      ],
+      "@routes/*": [
+        "src/routes/*"
+      ],
+      "@schemas/*": [
+        "src/schemas/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
       "@utils/*": [
         "src/utils/*"
       ]
@@ -61,6 +78,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleResolution": "nodenext",
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true
   }
 }

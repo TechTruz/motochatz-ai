@@ -1,0 +1,96 @@
+import bcrypt from 'bcrypt';
+import crypto from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { startSession } from 'mongoose';
+import type { Request } from 'express';
+import User from '@models/user.js';
+import Garage from '@models/garage.js';
+import RefreshToken from '@/models/refreshToken.js';
+import type { LoginPayload, RegisterPayload } from '@schemas/auth.schema.js';
+import UnauthorizedError from '@errors/UnauthorizedError.js';
+import NotFoundError from '@errors/NotFoundError.js';
+import { signToken } from '@utils/jwt.js';
+
+class AuthService {
+    static async register(payload: RegisterPayload) {
+        const session = await startSession();
+
+        // https://dev.to/sarwarasik/mongodb-transactions-error-transaction-numbers-are-only-allowed-on-a-replica-set-member-or-mongos-4083
+        // https://medium.com/workleap/the-only-local-mongodb-replica-set-with-docker-compose-guide-youll-ever-need-2f0b74dd8384
+        const { user, garage } = await session.withTransaction(async () => {
+            const user = new User({
+                email: payload.email,
+                firstName: payload.firstName,
+                lastName: payload.lastName ?? null,
+            });
+
+            const hashedPassword = await bcrypt.hash(payload.password, 10);
+            user.hashedPassword = hashedPassword;
+
+            await user.save({ session });
+
+            const garage = await new Garage({
+                name: payload.garageName,
+                owner: user._id,
+            }).save({ session });
+
+            return {
+                user,
+                garage,
+            };
+        });
+
+        await session.endSession();
+
+        return { user, garage };
+    }
+
+    static async login(payload: LoginPayload, req: Request) {
+        const user = await User.findOne({
+            email: payload.email,
+        });
+
+        if (
+            !user ||
+            !(await bcrypt.compare(
+                payload.password,
+                user.hashedPassword as string
+            ))
+        ) {
+            throw new UnauthorizedError({
+                message: 'Incorrect email or password',
+            });
+        }
+
+        const garage = await Garage.findOne({
+            owner: user._id,
+        });
+
+        if (!garage) {
+            throw new NotFoundError({
+                message: 'Garage does not exist',
+            });
+        }
+
+        const hostname = `${req.protocol}://${req.get('host')}`;
+
+        const refreshToken = uuidv4();
+        const hashedRefreshToken = crypto
+            .createHash('sha256')
+            .update(refreshToken)
+            .digest('hex');
+        const accessToken = signToken(user, garage, hostname);
+
+        await RefreshToken.create({
+            _id: hashedRefreshToken,
+            owner: user._id,
+        });
+
+        return {
+            accessToken,
+            refreshToken,
+        };
+    }
+}
+
+export default AuthService;

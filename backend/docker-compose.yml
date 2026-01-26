@@ -4,18 +4,35 @@ services:
     restart: always
     volumes:
       - db_data:/data/db
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/?authSource=motochatz --quiet
-      interval: 30s
+      test: >
+        mongosh --port 27017 --quiet --eval "
+          try {
+            if (rs.status().ok) {
+              quit(0);
+            }
+          } catch (e) {
+            rs.initiate({
+              _id: 'rs0',
+              members: [{ _id: 0, host: 'db:27017' }]
+            });
+
+            quit(1);
+          }
+        "
+      interval: 10s
       timeout: 10s
       retries: 5
   api:
     build: .
-    image: motochatz-be
+    image: motochatz-be:latest
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URI: "mongodb://db:27017/motochatz"
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URI: "mongodb://db:27017/motochatz?replicaSet=rs0"
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       db:
         condition: service_healthy
