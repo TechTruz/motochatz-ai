@@ -17,19 +17,15 @@ const app = express();
 
 app.set('trust proxy', true);
 app.disable('x-powered-by');
-/*
- * @todo Encapsulate and move all configurations as @config files
- */
 app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.path === '/events/stream') {
+    if (req.path.startsWith('/api/stream')) {
         return next();
     }
 
     return helmet()(req, res, next);
 });
-
 app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.path === '/events/stream') {
+    if (req.path.startsWith('/api/stream')) {
         return next();
     }
 

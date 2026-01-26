@@ -129,6 +129,7 @@ Login.
 - Headers:
     - `Content-Type: application/json`
 - Body:
+
     ```
     {
         "data": {
@@ -137,6 +138,10 @@ Login.
         }
     }
     ```
+
+    > accessToken is a JWT token with 15 minutes of expiration time, while refreshToken is a UUID string with 7 days of expiration time
+
+- JWT Claims:
 
 #### Example
 
@@ -158,9 +163,43 @@ Login.
     Content-Type: application/json
     {
         "data": {
-            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30",
-            "refreshToken": "8ed6a001-94f5-4241-b6db-c066f321ce4b"
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNjA3NGVmZi04YzYxLTQ3NjMtODY5Zi0yYTY5MmVlYmRmOWMiLCJzdWIiOiI2OTc3MDk2NGQ2ZjRjN2Q3ZTg3NjhiYzMiLCJuYW1lIjoiSm9obiBEb2UiLCJyb2xlIjoiQURNSU4iLCJnYXJhZ2VJZCI6IjY5NzcwOTY0ZDZmNGM3ZDdlODc2OGJjNSIsImdhcmFnZU5hbWUiOiJCZW5na2VsIFN1cHJhbWFuIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiYXVkIjoiKiIsImlhdCI6MTc2OTQwODg5MiwiZXhwIjoxNzY5NDA5NzkyfQ.bO-i1PmwGsx3xtV710-neUSOgLTI8dJYs0ySmLiWT2g",
+            "refreshToken": "4ab2f2db-669a-4e82-8116-39bc9a896061"
         }
+    }
+    ```
+
+- Note: The access token provided has claims as shown below
+
+    ```
+    {
+        "jti": <string>
+        "sub": <string>, // user's id
+        "name": <string>, // user's full name
+        "role": "USER" | "ADMIN",
+        "garageId": <string>,
+        "garageName": <string>,
+        "iss": <string>,
+        "aud": <string>,
+        "iat": <number>,
+        "exp": <number>
+    }
+    ```
+
+    For example:
+
+    ```json
+    {
+        "jti": "b6074eff-8c61-4763-869f-2a692eebdf9c",
+        "sub": "69770964d6f4c7d7e8768bc3",
+        "name": "John Doe",
+        "role": "ADMIN",
+        "garageId": "69770964d6f4c7d7e8768bc5",
+        "garageName": "Bengkel Supraman",
+        "iss": "http://localhost:3000",
+        "aud": "*",
+        "iat": 1769408892,
+        "exp": 1769409792
     }
     ```
 
