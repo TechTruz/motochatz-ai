@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import Logger from '@utils/logger.js';
 
-const DATABASE_URI = process.env.DATABASE_URI;
-
 mongoose.connection.on('connecting', () =>
     Logger.debug('Connecting to the database...')
 );
@@ -29,8 +27,15 @@ mongoose.connection.on('error', (err) =>
 );
 
 export const connectDb = async () => {
+    const uri = process.env.DATABASE_URI;
+
+    if (!uri) {
+        Logger.error('DATABASE_URI is missing from process.env');
+        process.exit(1);
+    }
+
     try {
-        await mongoose.connect(DATABASE_URI);
+        await mongoose.connect(uri);
     } catch (err) {
         Logger.error('Database initial connection error:', err);
     }

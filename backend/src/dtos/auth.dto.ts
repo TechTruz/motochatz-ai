@@ -13,9 +13,9 @@ export class RegisterDataDTO {
 
     constructor(user: UserDocument, garage: GarageDocument) {
         this.userId = user._id.toString();
-        this.email = user.email;
-        this.firstName = user.firstName;
-        this.lastName = user.lastName ?? null;
+        this.email = user.email as string;
+        this.firstName = user.firstName as string;
+        this.lastName = (user.lastName as string | null) ?? null;
         this.garageId = garage._id.toString();
         this.garageName = garage.name;
         this.createdAt = user.createdAt.toISOString();
@@ -32,6 +32,23 @@ export class RegisterDataDTO {
             garageName: this.garageName,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
+        };
+    }
+}
+
+export class LoginDataDTO {
+    accessToken: string;
+    refreshToken: string;
+
+    constructor(accessToken: string, refreshToken: string) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+    getObject() {
+        return {
+            accessToken: this.accessToken,
+            refreshToken: this.refreshToken,
         };
     }
 }

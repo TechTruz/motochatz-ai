@@ -19,4 +19,10 @@ export const RegisterSchema = z
         }
     });
 
+export const LoginSchema = z.strictObject({
+    email: z.email(),
+    password: z.string().min(8).max(64),
+});
+
 export type RegisterPayload = z.infer<typeof RegisterSchema>;
+export type LoginPayload = z.infer<typeof LoginSchema>;
