@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import { ZodError } from 'zod';
+import * as z from 'zod';
+import { mongo } from 'mongoose';
 import { CustomError } from '@errors/CustomError.js';
 import BadRequestError from '@errors/BadRequestError.js';
 import Logger from '@utils/logger.js';
@@ -12,7 +13,7 @@ export const errorHandler = (
 ) => {
     let customError: Error = err;
 
-    if (err instanceof ZodError) {
+    if (err instanceof z.ZodError) {
         const errorContents = err.issues.map((issue) => ({
             message: issue.message,
             context: { path: issue.path },
@@ -44,7 +45,42 @@ export const errorHandler = (
         return res.status(statusCode).send({ errors });
     }
 
-    Logger.error(err);
+    // I have to catch this manually cus apparently Mongoose do not consider
+    // unique constraint validation on application layer worth implementing,
+    // instead they just pass it to the database layer and let the DB driver
+    // throw the error >:(
+    if (err instanceof mongo.MongoServerError) {
+        if (err.code === 11000) {
+            const duplicateKey = Object.keys(err.keyPattern)[0];
+
+            return res.status(409).send({
+                errors: [
+                    {
+                        message: `${duplicateKey} is already exist with the same value`,
+                        context: {
+                            path: [duplicateKey],
+                        },
+                    },
+                ],
+            });
+        }
+    }
+
+    if (err instanceof SyntaxError) {
+        return res.status(400).send({
+            errors: [
+                {
+                    message: err.message,
+                },
+            ],
+        });
+    }
+
+    Logger.error('Name: ' + err.name);
+    Logger.error('Message: ' + err.message);
+    Logger.error('Cause: ' + err.cause);
+    Logger.error('Stack: ' + err.stack);
+
     res.status(500).send({
         errors: [
             {

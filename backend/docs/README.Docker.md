@@ -2,8 +2,15 @@
 
 ```sh
 cd backend
+
+# Create a new .env.docker file and assign the variables according to .env.docker.example
+touch .env.docker
+
+# To generate JWT_SECRET
+openssl rand -hex 32 | sed 's/^/JWT_SECRET=/' >> .env.docker
+
 # Build the services and start in detached mode
-docker compose up -d -build
+docker compose --env-file .env.docker up -d -build
 ```
 
 ```sh
