@@ -10,11 +10,11 @@ import {
 
 export default function ChatSection() {
   return (
-    <Card className="bg-[#0F1729] border-gray-800 ">
+    <Card className="border-gray-800 bg-[#0F1729]">
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
             <CardTitle className="text-xl text-white">
               Gemini 1.5 Flash (RAG)
             </CardTitle>
@@ -26,8 +26,8 @@ export default function ChatSection() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col max-h-[300px] bg-slate-800">
-        <div className="flex-1 overflow-auto p-6 space-y-4">
+      <CardContent className="flex max-h-[300px] flex-col bg-slate-800">
+        <div className="flex-1 space-y-4 overflow-auto p-6">
           <ChatBubble
             role="user"
             content="Bagaimana cara reset indikator oli Aerox?"
@@ -59,7 +59,7 @@ export default function ChatSection() {
           />
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-4 ">
+      <CardFooter className="flex flex-col gap-4">
         <ChatInput />
         <p className="text-gray-400">INTERNAL SANDBOX ENVIRONMENT</p>
       </CardFooter>

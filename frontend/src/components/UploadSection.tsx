@@ -37,7 +37,7 @@ export default function UploadSection() {
   };
 
   return (
-    <Card className="bg-[#0F1729] border-gray-800">
+    <Card className="border-gray-800 bg-[#0F1729]">
       <CardHeader>
         <CardTitle className="text-xl text-white">
           Upload Manual Teknis
@@ -48,19 +48,19 @@ export default function UploadSection() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+          className={`rounded-lg border-2 border-dashed p-12 text-center transition-colors ${
             isDragging
               ? "border-blue-500 bg-blue-500/10"
               : "border-gray-700 hover:border-gray-600"
           }`}
         >
           <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-800">
               <Upload size={32} className="text-gray-400" />
             </div>
 
             <div>
-              <p className="text-white font-medium mb-2">
+              <p className="mb-2 font-medium text-white">
                 Drag and drop file PDF atau klik untuk mencari file di komputer
                 Anda
               </p>
@@ -72,7 +72,7 @@ export default function UploadSection() {
             <Button
               onClick={handleFileSelect}
               size="lg"
-              className="mt-4 bg-blue-600 hover:bg-blue-700 cursor-pointer"
+              className="mt-4 cursor-pointer bg-blue-600 hover:bg-blue-700"
             >
               Pilih Dokumen
             </Button>

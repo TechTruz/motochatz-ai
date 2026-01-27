@@ -53,12 +53,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="pt-3 pb-5">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="h-10 px-1 cursor-default">
+            <SidebarMenuButton asChild className="h-10 cursor-default px-1">
               <a href="#" className="flex items-center gap-3">
                 <div className="flex size-8 items-center justify-center rounded-lg bg-blue-600">
                   <span className="text-lg font-bold text-white">M</span>
                 </div>
-                <span className="text-sm font-semibold leading-none">
+                <span className="text-sm leading-none font-semibold">
                   Moto Chatz AI
                 </span>
               </a>

@@ -2,8 +2,14 @@
 
 import * as React from "react";
 import { type LucideIcon } from "lucide-react";
-import { IconLogout, IconUserCircle } from "@tabler/icons-react";
-
+import {
+  IconLogout,
+  IconUserCircle,
+  IconHelp,
+  IconInfoCircle,
+} from "@tabler/icons-react";
+import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -30,6 +36,13 @@ export function NavSecondary({
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const { isAuthenticated, clearAuth } = useAuthStore();
+
+  const handleLogout = () => {
+    clearAuth();
+    toast.success("Logged out successfully");
+  };
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -39,28 +52,46 @@ export function NavSecondary({
               {item.title === "Settings" ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton className="cursor-pointer">
                       <item.icon />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     className="min-w-56 rounded-lg"
-                    side="right"
-                    align="end"
+                    side="top"
+                    align="start"
                     sideOffset={4}
                   >
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <IconUserCircle />
-                        Account
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <IconLogout />
-                      Log out
-                    </DropdownMenuItem>
+                    {isAuthenticated ? (
+                      <>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem className="cursor-pointer">
+                            <IconUserCircle />
+                            Account
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={handleLogout}
+                          className="cursor-pointer"
+                        >
+                          <IconLogout />
+                          Log out
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem className="cursor-pointer">
+                          <IconHelp />
+                          Help & Support
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                          <IconInfoCircle />
+                          About
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
