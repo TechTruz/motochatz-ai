@@ -6,7 +6,7 @@ export const RegisterSchema = z
         password: z.string().min(8).max(64),
         repeatPassword: z.string(),
         firstName: z.string(),
-        lastName: z.string().optional(),
+        lastName: z.string().nullable().optional(),
         garageName: z.string().max(50),
     })
     .superRefine(({ password, repeatPassword }, ctx) => {
