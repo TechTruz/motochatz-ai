@@ -6,6 +6,7 @@ import express, {
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import routes from '@routes/index.route.js';
 import { errorHandler } from '@middlewares/errors.js';
 import morganMiddleware from '@configs/morganMiddleware.js';
@@ -40,6 +41,7 @@ app.use(
 app.use(morganMiddleware);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 app.use('/api', routes);
 app.use((req: Request, _res: Response, next: NextFunction) => {

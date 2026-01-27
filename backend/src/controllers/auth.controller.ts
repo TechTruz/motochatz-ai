@@ -30,3 +30,7 @@ export async function loginController(req: Request, res: Response) {
 
     return res.status(201).json(responsePayload.getObject());
 }
+
+export async function refreshController(req: Request, res: Response) {
+    return res.status(201).json({});
+}
