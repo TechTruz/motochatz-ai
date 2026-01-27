@@ -1,52 +1,14 @@
 import { apiClient } from "@/lib/api-client";
-import type { User, AuthTokens } from "@/stores/auth.store";
+import type {
+  User,
+  RegisterRequest,
+  LoginRequest,
+  RegisterResponse,
+  LoginResponse,
+  JWTPayload,
+} from "@/types/auth.types";
 
-// Request types
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  repeatPassword: string;
-  firstName: string;
-  lastName: string | null;
-  garageName: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-// Response types
-export interface RegisterResponse {
-  data: {
-    userId: string;
-    email: string;
-    firstName: string;
-    lastName: string | null;
-    garageId: string;
-    garageName: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
-export interface LoginResponse {
-  data: AuthTokens;
-}
-
-// JWT Payload type
-export interface JWTPayload {
-  jti: string;
-  sub: string; // user's id
-  name: string; // user's full name
-  role: "USER" | "ADMIN";
-  garageId: string;
-  garageName: string;
-  iss: string;
-  aud: string;
-  iat: number;
-  exp: number;
-}
+export type { RegisterRequest, LoginRequest };
 
 // Helper function to decode JWT
 export const decodeJWT = (token: string): JWTPayload => {
@@ -69,7 +31,6 @@ export const decodeJWT = (token: string): JWTPayload => {
 export const getUserFromToken = (accessToken: string): User => {
   const payload = decodeJWT(accessToken);
 
-  // Split name into firstName and lastName
   const nameParts = payload.name.split(" ");
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : null;
