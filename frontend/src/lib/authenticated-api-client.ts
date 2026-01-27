@@ -1,4 +1,4 @@
-import  axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -52,7 +52,11 @@ export const authenticatedApiClient = {
     data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await authenticatedAxiosInstance.post<T>(endpoint, data, config);
+    const response = await authenticatedAxiosInstance.post<T>(
+      endpoint,
+      data,
+      config
+    );
     return response.data;
   },
 
@@ -61,12 +65,19 @@ export const authenticatedApiClient = {
     data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await authenticatedAxiosInstance.put<T>(endpoint, data, config);
+    const response = await authenticatedAxiosInstance.put<T>(
+      endpoint,
+      data,
+      config
+    );
     return response.data;
   },
 
   async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await authenticatedAxiosInstance.delete<T>(endpoint, config);
+    const response = await authenticatedAxiosInstance.delete<T>(
+      endpoint,
+      config
+    );
     return response.data;
   },
 
@@ -75,7 +86,11 @@ export const authenticatedApiClient = {
     data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await authenticatedAxiosInstance.patch<T>(endpoint, data, config);
+    const response = await authenticatedAxiosInstance.patch<T>(
+      endpoint,
+      data,
+      config
+    );
     return response.data;
   },
 };
