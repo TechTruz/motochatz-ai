@@ -8,16 +8,17 @@ import { toast } from "sonner";
 export default function Login() {
   useDocumentTitle("Login");
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const initialAuthState = useRef(isAuthenticated);
   const hasShownToast = useRef(false);
 
   useEffect(() => {
-    if (isAuthenticated && !hasShownToast.current) {
+    if (initialAuthState.current && !hasShownToast.current) {
       toast.info(
         "Anda sudah login. Silakan logout terlebih dahulu jika ingin login dengan akun lain."
       );
       hasShownToast.current = true;
     }
-  }, [isAuthenticated]);
+  }, []);
 
   if (isAuthenticated) {
     return <Navigate to="/knowledge-base" replace />;
