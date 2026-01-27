@@ -8,7 +8,7 @@ Version: 0.0.1 (Prototype)
 | ------ | --------------------------- | ----------------------------------------- | -------------- | ------------- | ----------------------------------- |
 | POST   | /api/auth/register          | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister)       |
 | POST   | /api/auth/login             | Login                                     | True           | Admin         | [Link](#post-apiauthlogin)          |
-| POST   | /api/auth/refresh           | Get a new access token with refresh token | True           | Admin         | [Link](#post-apiauthrefresh)        |
+| GET    | /api/auth/refresh           | Get a new access token and refresh token  | True           | Admin         | [Link](#post-apiauthrefresh)        |
 | DELETE | /api/auth/token             | Revoke refresh token and access token     | True           | Admin         | [Link](#delete-apiauthtoken)        |
 | GET    | /api/documents/signed-url   | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
 | GET    | /api/documents              | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |
@@ -128,13 +128,16 @@ Login.
 - Status: `Created`
 - Headers:
     - `Content-Type: application/json`
+    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
+
+    > React (or any JavaScript) application can't read httpOnly cookie, but the browser will automatically handles it for every subsequent request that matches the `Path`, which in this case any `/api/auth` endpoints.
+
 - Body:
 
     ```
     {
         "data": {
-            "accessToken": <string>,
-            "refreshToken": <string>
+            "accessToken": <string>
         }
     }
     ```
@@ -159,10 +162,10 @@ Login.
     ```http
     HTTP/1.1 201 Created
     Content-Type: application/json
+    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
     {
         "data": {
-            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNjA3NGVmZi04YzYxLTQ3NjMtODY5Zi0yYTY5MmVlYmRmOWMiLCJzdWIiOiI2OTc3MDk2NGQ2ZjRjN2Q3ZTg3NjhiYzMiLCJuYW1lIjoiSm9obiBEb2UiLCJyb2xlIjoiQURNSU4iLCJnYXJhZ2VJZCI6IjY5NzcwOTY0ZDZmNGM3ZDdlODc2OGJjNSIsImdhcmFnZU5hbWUiOiJCZW5na2VsIFN1cHJhbWFuIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiYXVkIjoiKiIsImlhdCI6MTc2OTQwODg5MiwiZXhwIjoxNzY5NDA5NzkyfQ.bO-i1PmwGsx3xtV710-neUSOgLTI8dJYs0ySmLiWT2g",
-            "refreshToken": "4ab2f2db-669a-4e82-8116-39bc9a896061"
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNjA3NGVmZi04YzYxLTQ3NjMtODY5Zi0yYTY5MmVlYmRmOWMiLCJzdWIiOiI2OTc3MDk2NGQ2ZjRjN2Q3ZTg3NjhiYzMiLCJuYW1lIjoiSm9obiBEb2UiLCJyb2xlIjoiQURNSU4iLCJnYXJhZ2VJZCI6IjY5NzcwOTY0ZDZmNGM3ZDdlODc2OGJjNSIsImdhcmFnZU5hbWUiOiJCZW5na2VsIFN1cHJhbWFuIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiYXVkIjoiKiIsImlhdCI6MTc2OTQwODg5MiwiZXhwIjoxNzY5NDA5NzkyfQ.bO-i1PmwGsx3xtV710-neUSOgLTI8dJYs0ySmLiWT2g"
         }
     }
     ```
@@ -205,35 +208,31 @@ Login.
 
 ---
 
-### POST /api/auth/refresh
+### GET /api/auth/refresh
 
-Get a new access token and refresh token (token rotation). It will revoke the refresh token in the request payload.
+Get a new access token and refresh token (token rotation). It will revoke the old refresh token in the httpOnly cookie and set a fresh one.
 
 #### Request
 
-- Method: `POST`
+- Method: `GET`
 - URL: `http://localhost:3000/api/auth/refresh`
 - Headers:
-    - `Content-Type: application/json`
-- Body:
-    ```
-    {
-        "refreshToken": <string>
-    }
-    ```
+    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
+
+    > The Set-Cookie header is automatically handled by the browser. Just make sure to set `withCredentials: true` (Axios) or `credentials: "include"` (Fetch API).
 
 #### Response
 
-- Code: `201`
-- Status: `Created`
+- Code: `200`
+- Status: `OK`
 - Headers:
     - `Content-Type: application/json`
+    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
 - Body:
     ```
     {
         "data": {
-            "accessToken": <string>,
-            "refreshToken": <string>
+            "accessToken": <string>
         }
     }
     ```
@@ -243,22 +242,19 @@ Get a new access token and refresh token (token rotation). It will revoke the re
 - Request
 
     ```http
-    POST http://localhost:3000/api/auth/refresh HTTP/1.1
-    Content-Type: application/json
-    {
-        "refreshToken": "8ed6a001-94f5-4241-b6db-c066f321ce4b"
-    }
+    GET http://localhost:3000/api/auth/refresh HTTP/1.1
+    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
     ```
 
 - Response
 
     ```http
-    HTTP/1.1 201 Created
+    HTTP/1.1 200 OK
     Content-Type: application/json
+    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
     {
         "data": {
-            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30",
-            "refreshToken": "4ab2f2db-669a-4e82-8116-39bc9a896061"
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
         }
     }
     ```
@@ -276,14 +272,8 @@ Revoke refresh token and access token.
 - Method: `DELETE`
 - URL: `http://localhost:3000/api/auth/token`
 - Headers:
-    - `Content-Type: application/json`
     - `Authorization: Bearer <string>`
-- Body:
-    ```
-    {
-        "refreshToken": <string>
-    }
-    ```
+    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
 
 #### Response
 
@@ -296,11 +286,8 @@ Revoke refresh token and access token.
 
     ```http
     DELETE http://localhost:3000/api/auth/token HTTP/1.1
-    Content-Type: application/json
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
-    {
-        "refreshToken": "8ed6a001-94f5-4241-b6db-c066f321ce4b"
-    }
+    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
     ```
 
 - Response
