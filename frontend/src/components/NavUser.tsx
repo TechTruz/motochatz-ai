@@ -11,7 +11,7 @@ export function NavUser({
   };
 }) {
   return (
-    <div className="flex cursor-pointer items-center gap-2">
+    <div className="flex items-center gap-2">
       <div className="text-right">
         <div className="text-sm font-medium">{user.name}</div>
         <div className="text-muted-foreground text-xs">{user.role}</div>

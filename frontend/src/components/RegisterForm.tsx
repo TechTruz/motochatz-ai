@@ -75,7 +75,7 @@ export function RegisterForm({
                 />
               </Field>
               <Field className="gap-1">
-                <FieldLabel htmlFor="lastName">Last Name (Optional)</FieldLabel>
+                <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
                 <Input
                   id="lastName"
                   type="text"

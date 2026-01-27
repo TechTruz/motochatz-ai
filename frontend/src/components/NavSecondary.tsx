@@ -8,10 +8,8 @@ import {
   IconHelp,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth.store";
-
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -38,13 +36,11 @@ export function NavSecondary({
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const navigate = useNavigate();
   const { isAuthenticated, clearAuth } = useAuthStore();
 
   const handleLogout = () => {
     clearAuth();
     toast.success("Logged out successfully");
-    navigate("/knowledge-base");
   };
 
   return (
@@ -70,24 +66,27 @@ export function NavSecondary({
                     {isAuthenticated ? (
                       <>
                         <DropdownMenuGroup>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
                             <IconUserCircle />
                             Account
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout}>
+                        <DropdownMenuItem
+                          onClick={handleLogout}
+                          className="cursor-pointer"
+                        >
                           <IconLogout />
                           Log out
                         </DropdownMenuItem>
                       </>
                     ) : (
                       <DropdownMenuGroup>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
                           <IconHelp />
                           Help & Support
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
                           <IconInfoCircle />
                           About
                         </DropdownMenuItem>
