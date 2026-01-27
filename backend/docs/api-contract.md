@@ -141,8 +141,6 @@ Login.
 
     > accessToken is a JWT token with 15 minutes of expiration time, while refreshToken is a UUID string with 7 days of expiration time
 
-- JWT Claims:
-
 #### Example
 
 - Request
@@ -209,7 +207,7 @@ Login.
 
 ### POST /api/auth/refresh
 
-Get a new access token with refresh token.
+Get a new access token and refresh token (token rotation). It will revoke the refresh token in the request payload.
 
 #### Request
 
@@ -234,7 +232,8 @@ Get a new access token with refresh token.
     ```
     {
         "data": {
-            "accessToken": <string>
+            "accessToken": <string>,
+            "refreshToken": <string>
         }
     }
     ```
@@ -258,7 +257,8 @@ Get a new access token with refresh token.
     Content-Type: application/json
     {
         "data": {
-            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30",
+            "refreshToken": "4ab2f2db-669a-4e82-8116-39bc9a896061"
         }
     }
     ```
