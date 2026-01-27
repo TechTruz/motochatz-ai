@@ -23,11 +23,18 @@ export async function loginController(req: Request, res: Response) {
 
     const { accessToken, refreshToken } = await AuthService.login(data, req);
 
-    const loginResponseData = new LoginDataDTO(accessToken, refreshToken);
+    const loginResponseData = new LoginDataDTO(accessToken);
     const responsePayload = new ResponsePayloadDTO(
         loginResponseData.getObject()
     );
 
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: '/api/auth',
+        sameSite: 'strict',
+    });
     return res.status(201).json(responsePayload.getObject());
 }
 
