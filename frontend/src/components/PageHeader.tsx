@@ -1,6 +1,9 @@
 import { NavUser } from "@/components/NavUser";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +16,9 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title }: PageHeaderProps) {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuthStore();
+
   return (
     <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-3">
       <div className="flex items-center gap-2">
@@ -29,14 +35,34 @@ export function PageHeader({ title }: PageHeaderProps) {
         </Breadcrumb>
       </div>
       <div className="mr-2">
-        <NavUser
-          user={{
-            name: "Admin User",
-            email: "admin@motochatzai.com",
-            avatar: "",
-            role: "Superadmin",
-          }}
-        />
+        {isAuthenticated && user ? (
+          <NavUser
+            user={{
+              name: `${user.firstName} ${user.lastName || ""}`.trim(),
+              email: user.email,
+              avatar: "",
+              role: user.role,
+            }}
+          />
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => navigate("/login")}
+              variant="outline"
+              size="sm"
+              className="cursor-pointer"
+            >
+              Login
+            </Button>
+            <Button
+              onClick={() => navigate("/register")}
+              size="sm"
+              className="cursor-pointer"
+            >
+              Register
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );

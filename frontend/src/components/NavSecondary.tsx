@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { type LucideIcon } from "lucide-react";
-import { IconLogout, IconUserCircle } from "@tabler/icons-react";
+import {
+  IconLogout,
+  IconUserCircle,
+  IconHelp,
+  IconInfoCircle,
+} from "@tabler/icons-react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth.store";
 
 import {
   SidebarGroup,
@@ -30,6 +38,15 @@ export function NavSecondary({
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const navigate = useNavigate();
+  const { isAuthenticated, clearAuth } = useAuthStore();
+
+  const handleLogout = () => {
+    clearAuth();
+    toast.success("Logged out successfully");
+    navigate("/knowledge-base");
+  };
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -39,28 +56,43 @@ export function NavSecondary({
               {item.title === "Settings" ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton className="cursor-pointer">
                       <item.icon />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     className="min-w-56 rounded-lg"
-                    side="right"
-                    align="end"
+                    side="top"
+                    align="start"
                     sideOffset={4}
                   >
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <IconUserCircle />
-                        Account
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <IconLogout />
-                      Log out
-                    </DropdownMenuItem>
+                    {isAuthenticated ? (
+                      <>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem>
+                            <IconUserCircle />
+                            Account
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                          <IconLogout />
+                          Log out
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                          <IconHelp />
+                          Help & Support
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <IconInfoCircle />
+                          About
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
