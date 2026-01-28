@@ -8,6 +8,13 @@ declare global {
             JWT_SECRET: string;
         }
     }
+
+    namespace Express {
+        interface Request {
+            refreshTokenId?: string;
+            userId?: string;
+        }
+    }
 }
 
 export {};

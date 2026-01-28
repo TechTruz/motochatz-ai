@@ -5,7 +5,7 @@ import { startSession } from 'mongoose';
 import type { Request } from 'express';
 import User from '@models/user.js';
 import Garage from '@models/garage.js';
-import RefreshToken from '@/models/refreshToken.js';
+import RefreshToken from '@models/refreshToken.js';
 import type { LoginPayload, RegisterPayload } from '@schemas/auth.schema.js';
 import UnauthorizedError from '@errors/UnauthorizedError.js';
 import NotFoundError from '@errors/NotFoundError.js';
@@ -73,18 +73,79 @@ class AuthService {
         }
 
         const hostname = `${req.protocol}://${req.get('host')}`;
+        const accessToken = signToken(user, garage, hostname);
 
         const refreshToken = uuidv4();
         const hashedRefreshToken = crypto
             .createHash('sha256')
             .update(refreshToken)
             .digest('hex');
-        const accessToken = signToken(user, garage, hostname);
 
         await RefreshToken.create({
             _id: hashedRefreshToken,
             owner: user._id,
         });
+
+        return {
+            accessToken,
+            refreshToken,
+        };
+    }
+
+    static async rotateRefreshToken(
+        refreshTokenId: string,
+        userId: string,
+        protocol: string,
+        hostname: string
+    ) {
+        const session = await startSession();
+
+        const { accessToken, refreshToken } = await session.withTransaction(
+            async () => {
+                await RefreshToken.deleteOne({
+                    _id: refreshTokenId,
+                });
+
+                const user = await User.findById(userId);
+
+                if (!user) {
+                    throw new NotFoundError({
+                        message: 'User does not exist',
+                    });
+                }
+
+                const garage = await Garage.findOne({
+                    owner: user._id,
+                });
+
+                if (!garage) {
+                    throw new NotFoundError({
+                        message: 'Garage does not exist',
+                    });
+                }
+
+                const host = `${protocol}://${hostname}`;
+                const accessToken = signToken(user, garage, host);
+
+                const refreshToken = uuidv4();
+                const hashedRefreshToken = crypto
+                    .createHash('sha256')
+                    .update(refreshToken)
+                    .digest('hex');
+
+                await RefreshToken.create({
+                    _id: hashedRefreshToken,
+                    owner: user._id,
+                });
+
+                return {
+                    accessToken,
+                    refreshToken,
+                };
+            }
+        );
+
+        await session.endSession();
 
         return {
             accessToken,

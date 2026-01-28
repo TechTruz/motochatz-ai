@@ -12,8 +12,6 @@ import { errorHandler } from '@middlewares/errors.js';
 import morganMiddleware from '@configs/morganMiddleware.js';
 import NotFoundError from '@errors/NotFoundError.js';
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 const app = express();
 
 app.set('trust proxy', true);
@@ -34,7 +32,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use(
     cors({
-        origin: NODE_ENV !== 'production' ? '*' : CORS_ORIGIN.split(','),
+        origin: process.env.CORS_ORIGIN
+            ? process.env.CORS_ORIGIN.split(',')
+            : '*',
         credentials: true,
     })
 );

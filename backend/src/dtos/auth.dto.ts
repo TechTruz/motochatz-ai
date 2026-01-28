@@ -49,3 +49,17 @@ export class LoginDataDTO {
         };
     }
 }
+
+export class RefreshTokenDataDTO {
+    accessToken: string;
+
+    constructor(accessToken: string) {
+        this.accessToken = accessToken;
+    }
+
+    getObject() {
+        return {
+            accessToken: this.accessToken,
+        };
+    }
+}
