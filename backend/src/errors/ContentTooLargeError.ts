@@ -15,8 +15,6 @@ export default class ContentTooLargeError extends CustomError {
         super(message || 'Content Too Large');
         this._code = code || ContentTooLargeError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, ContentTooLargeError.prototype);
     }
 
     get errors() {

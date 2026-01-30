@@ -19,13 +19,12 @@ export default class NotFoundError extends CustomError {
         this._code = code || NotFoundError._statusCode;
         this._logging = logging || false;
 
-        if (errors) {
-            this._errors = errors;
-        } else {
-            this._errors = [{ message: this.message, context: context || {} }];
-        }
-
-        Object.setPrototypeOf(this, NotFoundError.prototype);
+        this._errors = errors ?? [
+            {
+                message: this.message,
+                ...(context && { context: context }),
+            },
+        ];
     }
 
     get errors() {

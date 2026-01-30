@@ -15,8 +15,6 @@ export default class UnauthorizedError extends CustomError {
         super(message || 'Unauthorized');
         this._code = code || UnauthorizedError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, UnauthorizedError.prototype);
     }
 
     get errors() {

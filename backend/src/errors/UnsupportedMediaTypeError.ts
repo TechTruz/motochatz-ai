@@ -15,8 +15,6 @@ export default class UnsupportedMediaTypeError extends CustomError {
         super(message || 'Unsupported Media Type');
         this._code = code || UnsupportedMediaTypeError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, UnsupportedMediaTypeError.prototype);
     }
 
     get errors() {

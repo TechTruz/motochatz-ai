@@ -15,8 +15,6 @@ export default class ConflictError extends CustomError {
         super(message || 'Conflict');
         this._code = code || ConflictError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, ConflictError.prototype);
     }
 
     get errors() {

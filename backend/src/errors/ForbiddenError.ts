@@ -15,8 +15,6 @@ export default class ForbiddenError extends CustomError {
         super(message || 'Forbidden');
         this._code = code || ForbiddenError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, ForbiddenError.prototype);
     }
 
     get errors() {
