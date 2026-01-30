@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import type { Request, Response, NextFunction } from 'express';
 import type { JwtPayload } from 'jsonwebtoken';
 import RefreshToken from '@models/refreshToken.js';
+import AccessToken from '@models/accessToken.js';
 import UnauthorizedError from '@errors/UnauthorizedError.js';
 import { verifyToken } from '@utils/jwt.js';
 
@@ -57,6 +58,12 @@ export async function requireAccessToken(
 
     const hostname = `${req.protocol}://${req.get('host')}`;
     const tokenPayload = verifyToken(accessToken, hostname) as JwtPayload;
+
+    if (await AccessToken.findById(tokenPayload.jti)) {
+        throw new UnauthorizedError({
+            message: 'Invalid or expired access token',
+        });
+    }
 
     req.accessToken = accessToken;
     req.tokenPayload = tokenPayload;
