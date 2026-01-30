@@ -217,9 +217,9 @@ Get a new access token and refresh token (token rotation). It will revoke the ol
 - Method: `GET`
 - URL: `http://localhost:3000/api/auth/refresh`
 - Headers:
-    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
+    - `Cookie: refreshToken=<string>`
 
-    > The Set-Cookie header is automatically handled by the browser. Just make sure to set `withCredentials: true` (Axios) or `credentials: "include"` (Fetch API).
+    > The Cookie header is automatically handled by the browser. Just make sure to set `withCredentials: true` (Axios) or `credentials: "include"` (Fetch API).
 
 #### Response
 
@@ -243,7 +243,7 @@ Get a new access token and refresh token (token rotation). It will revoke the ol
 
     ```http
     GET http://localhost:3000/api/auth/refresh HTTP/1.1
-    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
+    Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7
     ```
 
 - Response
@@ -273,12 +273,14 @@ Revoke refresh token and access token.
 - URL: `http://localhost:3000/api/auth/token`
 - Headers:
     - `Authorization: Bearer <string>`
-    - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
+    - `Cookie: refreshToken=<string>`
 
 #### Response
 
 - Code: `204`
 - Status: `No Content`
+- Headers:
+    - `Set-Cookie: refreshToken=""; Max-Age=0; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
 
 #### Example
 
@@ -287,13 +289,14 @@ Revoke refresh token and access token.
     ```http
     DELETE http://localhost:3000/api/auth/token HTTP/1.1
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
-    Set-Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7; Max-Age=604800; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
+    Cookie: refreshToken=696f9e39-972e-4e0f-a6c7-ee60546e04e7
     ```
 
 - Response
 
     ```http
     HTTP/1.1 204 No Content
+    Set-Cookie: refreshToken=""; Max-Age=0; Path=/api/auth; Expires=Tue, 03 Feb 2026 15:09:50 GMT; HttpOnly; SameSite=Strict
     ```
 
 [Back to top](#endpoints)

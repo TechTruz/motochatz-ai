@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import * as z from 'zod';
 import { mongo } from 'mongoose';
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { CustomError } from '@errors/CustomError.js';
 import BadRequestError from '@errors/BadRequestError.js';
 import Logger from '@utils/logger.js';
@@ -77,7 +77,10 @@ export const errorHandler = (
         });
     }
 
-    if (err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {
+    if (
+        err instanceof jwt.TokenExpiredError ||
+        err instanceof jwt.JsonWebTokenError
+    ) {
         return res.status(401).send({
             errors: [
                 {

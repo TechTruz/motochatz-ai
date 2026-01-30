@@ -58,7 +58,7 @@ export async function requireAccessToken(
     const hostname = `${req.protocol}://${req.get('host')}`;
     const tokenPayload = verifyToken(accessToken, hostname) as JwtPayload;
 
+    req.accessToken = accessToken;
     req.tokenPayload = tokenPayload;
-    req.userId = tokenPayload.sub;
     next();
 }

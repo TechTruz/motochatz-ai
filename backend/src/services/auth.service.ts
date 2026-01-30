@@ -6,6 +6,7 @@ import type { Request } from 'express';
 import User from '@models/user.js';
 import Garage from '@models/garage.js';
 import RefreshToken from '@models/refreshToken.js';
+import AccessToken from '@models/accessToken.js';
 import type { LoginPayload, RegisterPayload } from '@schemas/auth.schema.js';
 import UnauthorizedError from '@errors/UnauthorizedError.js';
 import NotFoundError from '@errors/NotFoundError.js';
@@ -151,6 +152,29 @@ class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    static async revokeTokens(
+        refreshTokenId: string,
+        accessToken: string,
+        jti: string,
+        exp: number
+    ) {
+        const session = await startSession();
+
+        await session.withTransaction(async () => {
+            await RefreshToken.deleteOne({
+                _id: refreshTokenId,
+            });
+
+            await AccessToken.insertOne({
+                _id: jti,
+                token: accessToken,
+                expireAt: new Date(exp * 1000),
+            });
+        });
+
+        await session.endSession();
     }
 }
 

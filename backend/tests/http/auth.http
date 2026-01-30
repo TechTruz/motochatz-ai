@@ -85,8 +85,6 @@ Content-Type: application/json
 
 ### REFRESH_SUCCESS_200_0
 
-# Rotate the tokens for the first time
-
 GET /api/auth/refresh HTTP/1.1
 Host: http://localhost:3000
 Cookie: refreshToken={{REFRESH_TOKEN}}
@@ -102,3 +100,13 @@ Cookie: refreshToken={{REFRESH_TOKEN}}
       client.global.set('REFRESH_TOKEN', REFRESH_TOKEN);
   }
 %}
+
+
+### REVOKE_SUCCESS_204_0
+
+# Revoke refresh token and access token
+
+DELETE /api/auth/token HTTP/1.1
+Host: http://localhost:3000
+Cookie: refreshToken={{REFRESH_TOKEN}}
+Authorization: Bearer {{ACCESS_TOKEN}}

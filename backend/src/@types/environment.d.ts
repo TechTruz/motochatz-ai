@@ -15,6 +15,7 @@ declare global {
         interface Request {
             refreshTokenId?: string;
             userId?: string | undefined;
+            accessToken?: string;
             tokenPayload?: JwtPayload;
         }
     }

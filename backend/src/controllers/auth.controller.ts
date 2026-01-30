@@ -68,5 +68,20 @@ export async function refreshController(req: Request, res: Response) {
 }
 
 export async function revokeTokenController(req: Request, res: Response) {
-    return res.status(204);
+    await AuthService.revokeTokens(
+        req.refreshTokenId as string,
+        req.accessToken as string,
+        req.tokenPayload?.jti as string,
+        req.tokenPayload?.exp as number
+    );
+
+    res.cookie('refreshToken', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        maxAge: 0,
+        path: '/api/auth',
+        sameSite: 'strict',
+    });
+
+    return res.status(204).json();
 }
