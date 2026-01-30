@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import * as z from 'zod';
 import { mongo } from 'mongoose';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { CustomError } from '@errors/CustomError.js';
 import BadRequestError from '@errors/BadRequestError.js';
 import Logger from '@utils/logger.js';
@@ -68,6 +69,16 @@ export const errorHandler = (
 
     if (err instanceof SyntaxError) {
         return res.status(400).send({
+            errors: [
+                {
+                    message: err.message,
+                },
+            ],
+        });
+    }
+
+    if (err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {
+        return res.status(401).send({
             errors: [
                 {
                     message: err.message,

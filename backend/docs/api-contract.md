@@ -8,7 +8,7 @@ Version: 0.0.1 (Prototype)
 | ------ | --------------------------- | ----------------------------------------- | -------------- | ------------- | ----------------------------------- |
 | POST   | /api/auth/register          | Create a new admin account and new garage | False          | Any           | [Link](#post-apiauthregister)       |
 | POST   | /api/auth/login             | Login                                     | True           | Admin         | [Link](#post-apiauthlogin)          |
-| GET    | /api/auth/refresh           | Get a new access token and refresh token  | True           | Admin         | [Link](#post-apiauthrefresh)        |
+| GET    | /api/auth/refresh           | Get a new access token and refresh token  | True           | Admin         | [Link](#get-apiauthrefresh)         |
 | DELETE | /api/auth/token             | Revoke refresh token and access token     | True           | Admin         | [Link](#delete-apiauthtoken)        |
 | GET    | /api/documents/signed-url   | Get a signed url to upload a document     | True           | Admin         | [Link](#get-apidocumentssigned-url) |
 | GET    | /api/documents              | Get all documents                         | True           | Admin         | [Link](#get-apidocuments)           |

@@ -66,3 +66,7 @@ export async function refreshController(req: Request, res: Response) {
 
     return res.status(200).json(responsePayload.getObject());
 }
+
+export async function revokeTokenController(req: Request, res: Response) {
+    return res.status(204);
+}

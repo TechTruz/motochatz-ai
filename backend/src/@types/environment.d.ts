@@ -1,3 +1,5 @@
+import type { JwtPayload } from 'jsonwebtoken';
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -12,7 +14,8 @@ declare global {
     namespace Express {
         interface Request {
             refreshTokenId?: string;
-            userId?: string;
+            userId?: string | undefined;
+            tokenPayload?: JwtPayload;
         }
     }
 }
