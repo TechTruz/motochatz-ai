@@ -15,7 +15,7 @@ import {
  * - [x] POST /api/auth/register
  * - [x] POST /api/auth/login
  * - [x] POST /api/auth/refresh
- * - [WIP] DELETE /api/auth/token
+ * - [x] DELETE /api/auth/token
  */
 const router = Router();
 
