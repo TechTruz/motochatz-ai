@@ -19,13 +19,12 @@ export default class BadRequestError extends CustomError {
         this._code = code || BadRequestError._statusCode;
         this._logging = logging || false;
 
-        if (errors) {
-            this._errors = errors;
-        } else {
-            this._errors = [{ message: this.message, context: context || {} }];
-        }
-
-        Object.setPrototypeOf(this, BadRequestError.prototype);
+        this._errors = errors ?? [
+            {
+                message: this.message,
+                ...(context && { context: context }),
+            },
+        ];
     }
 
     get errors() {

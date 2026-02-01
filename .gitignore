@@ -5,11 +5,13 @@
 .env.*
 !.env.example
 !.env.docker.example
+*.tsbuildinfo
 
 # Frontend & Backend
 node_modules/
 dist/
 build/
+coverage/
 .npm
 *.log
 

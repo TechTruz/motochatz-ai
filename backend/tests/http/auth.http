@@ -1,0 +1,112 @@
+### REGISTER_SUCCESS_201_0
+
+< {%
+  client.global.set('USER_EMAIL', 'johndoe@mail.co');
+  client.global.set('USER_PASSWORD', 'notSoSecurePassword124');
+%}
+
+POST /api/auth/register HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "{{USER_EMAIL}}",
+  "firstName": "John",
+  "garageName": "Bengkel Mr. John",
+  "lastName": "Doe",
+  "password": "{{USER_PASSWORD}}",
+  "repeatPassword": "{{USER_PASSWORD}}"
+}
+
+
+### REGISTER_FAIL_400_0
+
+# - Invalid `email` format
+# - Missing required `firstName` property
+# - Invalid `garageName` type
+# - `password` and `repeatPassword` too short
+# - Unknown `unknown` field
+
+POST /api/auth/register HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "invalidemali",
+  "garageName": 123,
+  "lastName": "Doe",
+  "password": "short",
+  "repeatPassword": "short",
+  "unknown": "whoamI?"
+}
+
+
+### REGISTER_FAIL_400_1
+
+# different `password` and `repeatPassword`
+
+POST /api/auth/register HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "valid@email.co",
+  "firstName": "John",
+  "garageName": "Bengkel Mr. John",
+  "lastName": "Doe",
+  "password": "{{USER_PASSWORD}}",
+  "repeatPassword": "NotQuiteTheSame"
+}
+
+
+### LOGIN_SUCCESS_201_0
+
+POST /api/auth/login HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "{{USER_EMAIL}}",
+  "password": "{{USER_PASSWORD}}"
+}
+
+> {%
+  if (response.status === 201) {
+      const ACCESS_TOKEN = response.body.data.accessToken;
+      const REFRESH_TOKEN = response.headers
+          .all()
+          ['Set-Cookie'].value[0].match(/refreshToken=([^;]+)/)[1];
+  
+      client.global.set('ACCESS_TOKEN', ACCESS_TOKEN);
+      client.global.set('REFRESH_TOKEN', REFRESH_TOKEN);
+  }
+%}
+
+
+### REFRESH_SUCCESS_200_0
+
+GET /api/auth/refresh HTTP/1.1
+Host: http://localhost:3000
+Cookie: refreshToken={{REFRESH_TOKEN}}
+
+> {%
+  if (response.status === 200) {
+      const ACCESS_TOKEN = response.body.data.accessToken;
+      const REFRESH_TOKEN = response.headers
+          .all()
+          ['Set-Cookie'].value[0].match(/refreshToken=([^;]+)/)[1];
+  
+      client.global.set('ACCESS_TOKEN', ACCESS_TOKEN);
+      client.global.set('REFRESH_TOKEN', REFRESH_TOKEN);
+  }
+%}
+
+
+### REVOKE_SUCCESS_204_0
+
+# Revoke refresh token and access token
+
+DELETE /api/auth/token HTTP/1.1
+Host: http://localhost:3000
+Cookie: refreshToken={{REFRESH_TOKEN}}
+Authorization: Bearer {{ACCESS_TOKEN}}

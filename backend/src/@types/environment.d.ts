@@ -1,3 +1,5 @@
+import type { JwtPayload } from 'jsonwebtoken';
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -6,6 +8,15 @@ declare global {
             CORS_ORIGIN?: string;
             DATABASE_URI: string;
             JWT_SECRET: string;
+        }
+    }
+
+    namespace Express {
+        interface Request {
+            refreshTokenId?: string;
+            userId?: string | undefined;
+            accessToken?: string;
+            tokenPayload?: JwtPayload;
         }
     }
 }

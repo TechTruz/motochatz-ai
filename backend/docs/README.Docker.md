@@ -10,7 +10,7 @@ touch .env.docker
 openssl rand -hex 32 | sed 's/^/JWT_SECRET=/' >> .env.docker
 
 # Build the services and start in detached mode
-docker compose --env-file .env.docker up -d -build
+docker compose --env-file .env.docker up -d --build
 ```
 
 ```sh

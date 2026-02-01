@@ -6,13 +6,12 @@ import express, {
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import routes from '@routes/index.route.js';
 import { errorHandler } from '@middlewares/errors.js';
 import morganMiddleware from '@configs/morganMiddleware.js';
 import NotFoundError from '@errors/NotFoundError.js';
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 const app = express();
 
 app.set('trust proxy', true);
@@ -33,13 +32,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use(
     cors({
-        origin: NODE_ENV !== 'production' ? '*' : CORS_ORIGIN.split(','),
+        origin: process.env.CORS_ORIGIN
+            ? process.env.CORS_ORIGIN.split(',')
+            : '*',
         credentials: true,
     })
 );
 app.use(morganMiddleware);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 app.use('/api', routes);
 app.use((req: Request, _res: Response, next: NextFunction) => {

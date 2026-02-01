@@ -26,3 +26,14 @@ export function signToken(
         { expiresIn: '15m' }
     );
 }
+
+export function verifyToken(token: string, hostname: string) {
+    const audience = CORS_ORIGIN
+        ? (CORS_ORIGIN.split(',') as [string, ...string[]])
+        : '*';
+
+    return jwt.verify(token, JWT_SECRET, {
+        audience,
+        issuer: hostname,
+    });
+}

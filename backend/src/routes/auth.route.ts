@@ -2,20 +2,31 @@ import { Router } from 'express';
 import {
     registerController,
     loginController,
+    refreshController,
+    revokeTokenController,
 } from '@controllers/auth.controller.js';
+import {
+    requireRefreshToken,
+    requireAccessToken,
+} from '@middlewares/auth.middleware.js';
 
 /**
  * @todo Implement all the routes
  * - [x] POST /api/auth/register
- * - [WIP] POST /api/auth/login
- * - [ ] POST /api/auth/refresh
- * - [ ] DELETE /api/auth/token
+ * - [x] POST /api/auth/login
+ * - [x] POST /api/auth/refresh
+ * - [x] DELETE /api/auth/token
  */
 const router = Router();
 
 router.post('/register', registerController);
 router.post('/login', loginController);
-// router.post('/refresh');
-// router.delete('/token');
+router.get('/refresh', requireRefreshToken, refreshController);
+router.delete(
+    '/token',
+    requireRefreshToken,
+    requireAccessToken,
+    revokeTokenController
+);
 
 export default router;

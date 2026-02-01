@@ -15,8 +15,6 @@ export default class TooManyRequestError extends CustomError {
         super(message || 'Too Many Request');
         this._code = code || TooManyRequestError._statusCode;
         this._logging = logging || false;
-
-        Object.setPrototypeOf(this, TooManyRequestError.prototype);
     }
 
     get errors() {
