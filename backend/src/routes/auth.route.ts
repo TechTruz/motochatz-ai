@@ -11,10 +11,10 @@ import {
 } from '@middlewares/auth.middleware.js';
 
 /**
- * @todo Implement all the routes
+ * @todo Implement all the auth routes
  * - [x] POST /api/auth/register
  * - [x] POST /api/auth/login
- * - [x] POST /api/auth/refresh
+ * - [x] GET /api/auth/refresh
  * - [x] DELETE /api/auth/token
  */
 const router = Router();
