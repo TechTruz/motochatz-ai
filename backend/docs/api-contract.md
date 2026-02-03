@@ -129,8 +129,7 @@ Login.
 - Headers:
     - `Content-Type: application/json`
     - `Set-Cookie: refreshToken=<string>; Max-Age=<number>; Path=/api/auth; Expires=Day-of-week, DD Month YYYY HH:MM:SS GMT; HttpOnly; SameSite=Strict`
-
-    > React (or any JavaScript) application can't read httpOnly cookie, but the browser will automatically handles it for every subsequent request that matches the `Path`, which in this case any `/api/auth` endpoints.
+        > React (or any JavaScript) application can't read httpOnly cookie, but the browser will automatically handles it for every subsequent request that matches the `Path`, which in this case any `/api/auth` endpoints.
 
 - Body:
 
@@ -218,8 +217,7 @@ Get a new access token and refresh token (token rotation). It will revoke the ol
 - URL: `http://localhost:3000/api/auth/refresh`
 - Headers:
     - `Cookie: refreshToken=<string>`
-
-    > The Cookie header is automatically handled by the browser. Just make sure to set `withCredentials: true` (Axios) or `credentials: "include"` (Fetch API).
+        > The Cookie header is automatically handled by the browser. Just make sure to set `withCredentials: true` (Axios) or `credentials: "include"` (Fetch API).
 
 #### Response
 
@@ -314,7 +312,12 @@ Get a signed url to upload a document.
 - Parameters:
     - Query:
         - `fileName=<string>`
+            > fileName is file's name without the extension, only alphanumeric, dots, underscores, dashes, and whitespaces are allowed.
         - `fileType=<string>`
+            > fileType is in MIME format. Only 'application/pdf' and 'text/plain' is allowed. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types
+        - `fileSize=<string>`
+            > fileSize is file's size in bytes.
+
 - Headers:
     - `Authorization: Bearer <string>`
 
@@ -340,7 +343,7 @@ Get a signed url to upload a document.
 - Request
 
     ```http
-    GET http://localhost:3000/api/documents/signed-url?fileName=honda-blade-yamaha-125-r&fileType=pdf HTTP/1.1
+    GET http://localhost:3000/api/documents/signed-url?fileName=honda-blade-yamaha-125-r&fileType=application/pdf&fileSize=1278310 HTTP/1.1
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
     ```
 
@@ -377,11 +380,14 @@ Get all documents.
         - `page=<number>` (optional, default to `1`)
         - `status=<string>` (optional, default to `ALL`)
             - `ALL` (default)
+            - `UPLOADING`
             - `UPLOADED`
             - `INDEXED`
         - `sort=<string>` (optional, default to `documentId`)
             - `documentId` (default)
             - `-documentId`
+            - `fileSize`
+            - `-fileSize`
             - `createdAt`
             - `-createdAt`
             - `updatedAt`
@@ -402,7 +408,10 @@ Get all documents.
             {
                 "documentId": <string>,
                 "documentUrl": <string>,
-                "status": "ALL" | "UPLOADED" | "INDEXED",
+                "fileName": <string>,
+                "fileType": <string>,
+                "fileSize": <number>,
+                "status": "ALL" | "UPLOADING" | "UPLOADED" | "INDEXED",
                 "createdAt": <date>,
                 "updatedAt": <date>
             },
@@ -438,6 +447,9 @@ Get all documents.
             {
                 "documentId": "56fc40f9d735c28df206d029",
                 "documentUrl": "https://motochatz.s3.ap-southeast-1.amazonaws.com/honda-blade-yamaha-125-r-1737033100000.pdf",
+                "fileName": "honda-blade-yamaha-125-r-1737033100000.pdf",
+                "fileType": "application/pdf",
+                "fileSize": 9321887,
                 "status": "INDEXED",
                 "createdAt": "2026-02-26T09:59:45.001Z",
                 "updatedAt": "2026-02-26T11:01:04.123Z"
@@ -445,6 +457,9 @@ Get all documents.
             {
                 "documentId": "56fc40f9d735c28df206d045",
                 "documentUrl": "https://motochatz.s3.ap-southeast-1.amazonaws.com/toyota-avanza-15g-cvt-1976432816700.pdf",
+                "fileName": "toyota-avanza-15g-cvt-1976432816700.pdf",
+                "fileType": "application/pdf",
+                "fileSize": 6713282,
                 "status": "UPLOADED",
                 "createdAt": "2026-01-26T09:59:45.001Z",
                 "updatedAt": "2026-01-26T10:00:00.999Z"

@@ -6,6 +6,7 @@ import RefreshToken from '@models/refreshToken.js';
 import AccessToken from '@models/accessToken.js';
 import UnauthorizedError from '@errors/UnauthorizedError.js';
 import { verifyToken } from '@utils/jwt.js';
+import type { JwtClaim } from '@/@types/jwt.js';
 
 export async function requireRefreshToken(
     req: Request,
@@ -66,6 +67,6 @@ export async function requireAccessToken(
     }
 
     req.accessToken = accessToken;
-    req.tokenPayload = tokenPayload;
+    req.tokenPayload = tokenPayload as JwtClaim;
     next();
 }
