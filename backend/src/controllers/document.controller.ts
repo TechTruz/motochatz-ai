@@ -3,7 +3,7 @@ import validateData from '@utils/validator.js';
 import { GetSignedUrlSchema } from '@schemas/document.schema.js';
 import DocumentService from '@services/document.service.js';
 import { GetSignedUrlDataDTO } from '@dtos/document.dto.js';
-import { ResponsePayloadDTO } from '@/dtos/api.dto.js';
+import { ResponsePayloadDTO } from '@dtos/api.dto.js';
 
 /**
  * @todo Implement this controller

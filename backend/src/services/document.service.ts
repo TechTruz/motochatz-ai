@@ -18,11 +18,11 @@ class DocumentService {
             Key: `documents/${fileName}`,
         });
 
-        const signedUrl = await getSignedUrl(s3, command, {
+        let signedUrl = await getSignedUrl(s3, command, {
             expiresIn: 3600,
         });
 
-        const documentUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_PATH_STYLE === 'PATH' ? process.env.S3_BUCKET_NAME.concat('/') : ''}documents/${fileName}`;
+        const documentUrl = `${process.env.S3_PUBLIC_ENDPOINT ?? process.env.S3_ENDPOINT}/${process.env.S3_PATH_STYLE === 'PATH' ? process.env.S3_BUCKET_NAME.concat('/') : ''}documents/${fileName}`;
 
         const document = await Document.insertOne({
             garage: garageId,
@@ -32,6 +32,14 @@ class DocumentService {
             status: 'UPLOADING',
             documentUrl,
         });
+
+        if (process.env.S3_PUBLIC_ENDPOINT) {
+            const pattern = /^http[s]?:\/\/[^\/]+/;
+            signedUrl = signedUrl.replace(
+                pattern,
+                process.env.S3_PUBLIC_ENDPOINT
+            );
+        }
 
         return {
             documentId: document._id,

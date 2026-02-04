@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-    getManyDocuments,
+    // getManyDocuments,
     getSignedUrlController,
 } from '@controllers/document.controller.js';
 import { requireAccessToken } from '@middlewares/auth.middleware.js';
@@ -12,7 +12,7 @@ import { requireAccessToken } from '@middlewares/auth.middleware.js';
  */
 const router = Router();
 
-router.get('/', requireAccessToken, getManyDocuments);
+// router.get('/', requireAccessToken, getManyDocuments);
 router.get('/signed-url', requireAccessToken, getSignedUrlController);
 
 export default router;

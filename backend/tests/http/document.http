@@ -1,0 +1,50 @@
+### REGISTER_SUCCESS_201_0
+
+< {%
+  client.global.set('USER_EMAIL', 'johndoe@mail.co');
+  client.global.set('USER_PASSWORD', 'notSoSecurePassword124');
+%}
+
+POST /api/auth/register HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "{{USER_EMAIL}}",
+  "firstName": "John",
+  "garageName": "Bengkel Mr. John",
+  "lastName": "Doe",
+  "password": "{{USER_PASSWORD}}",
+  "repeatPassword": "{{USER_PASSWORD}}"
+}
+
+
+### LOGIN_SUCCESS_201_0
+
+POST /api/auth/login HTTP/1.1
+Host: http://localhost:3000
+Content-Type: application/json
+
+{
+  "email": "{{USER_EMAIL}}",
+  "password": "{{USER_PASSWORD}}"
+}
+
+> {%
+  if (response.status === 201) {
+      const ACCESS_TOKEN = response.body.data.accessToken;
+      const REFRESH_TOKEN = response.headers
+          .all()
+          ['Set-Cookie'].value[0].match(/refreshToken=([^;]+)/)[1];
+  
+      client.global.set('ACCESS_TOKEN', ACCESS_TOKEN);
+      client.global.set('REFRESH_TOKEN', REFRESH_TOKEN);
+  }
+%}
+
+
+### GET_SIGNED_URL_SUCCESS_200_0
+
+GET /api/documents/signed-url?fileName=document-1&fileType=application/pdf&fileSize=1000000 HTTP/1.1
+Host: http://localhost:3000
+Authorization: Bearer {{ACCESS_TOKEN}}
