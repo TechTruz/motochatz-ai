@@ -1,6 +1,7 @@
 import {
     ListBucketsCommand,
     CreateBucketCommand,
+    PutBucketPolicyCommand,
     S3Client,
     type Bucket,
 } from '@aws-sdk/client-s3';
@@ -51,15 +52,35 @@ export async function connectS3() {
             await s3.send(
                 new CreateBucketCommand({
                     Bucket: process.env.S3_BUCKET_NAME,
-                    ACL: 'public-read',
                 })
             );
 
-            Logger.debug('S3 bucker has been successfully created');
+            Logger.debug('S3 bucket has been successfully created');
+
+            await s3.send(
+                new PutBucketPolicyCommand({
+                    Bucket: process.env.S3_BUCKET_NAME,
+                    Policy: JSON.stringify({
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Sid: 'PublicRead',
+                                Effect: 'Allow',
+                                Principal: '*',
+                                Action: 's3:GetObject',
+                                Resource: `arn:aws:s3:::${process.env.S3_BUCKET_NAME}/*`,
+                            },
+                        ],
+                    }),
+                })
+            );
+
+            Logger.debug('S3 bucket policy has been successfully set up');
         }
 
         Logger.info('S3 connection established successfully');
     } catch (err) {
         Logger.error('S3 connection error:', err);
+        process.exit(1);
     }
 }

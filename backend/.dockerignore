@@ -35,5 +35,6 @@
 **/dist
 **/docs
 **/tests
+**/coverage
 LICENSE
 README.md

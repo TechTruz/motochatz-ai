@@ -38,5 +38,6 @@ export const connectDb = async () => {
         await mongoose.connect(uri);
     } catch (err) {
         Logger.error('Database initial connection error:', err);
+        process.exit(1);
     }
 };

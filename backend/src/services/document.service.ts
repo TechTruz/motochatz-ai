@@ -16,6 +16,8 @@ class DocumentService {
         const command = new PutObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
             Key: `documents/${fileName}`,
+            ContentType: payload.fileType,
+            ContentLength: payload.fileSize,
         });
 
         let signedUrl = await getSignedUrl(s3, command, {
@@ -34,7 +36,8 @@ class DocumentService {
         });
 
         if (process.env.S3_PUBLIC_ENDPOINT) {
-            const pattern = /^http[s]?:\/\/[^\/]+/;
+            const pattern = /^http[s]?:\/\/[^/]+/;
+
             signedUrl = signedUrl.replace(
                 pattern,
                 process.env.S3_PUBLIC_ENDPOINT

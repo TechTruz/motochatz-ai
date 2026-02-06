@@ -10,7 +10,8 @@
     "lint:fix": "eslint --fix",
     "start": "node ./dist/server.js",
     "start:dev": "nodemon --exec tsx --env-file=.env src/server.ts",
-    "docker:run": "docker compose --env-file .env.docker up -d --build"
+    "docker:compose:up": "docker compose --env-file .env.docker up -d --build",
+    "docker:compose:down": "docker compose down --volumes"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +36,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.973.1",
     "@eslint/js": "^9.39.2",
     "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.8.1",

@@ -7,7 +7,7 @@ import { requireAccessToken } from '@middlewares/auth.middleware.js';
 
 /**
  * @todo Implement all the document routes
- * - [ ] GET /api/documents/signed-url
+ * - [x] GET /api/documents/signed-url
  * - [ ] GET /api/documents
  */
 const router = Router();
