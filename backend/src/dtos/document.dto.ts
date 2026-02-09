@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import type { DocumentData } from '@/@types/document.js';
 
 export class GetSignedUrlDataDTO {
     private readonly documentId: string;
@@ -21,5 +22,17 @@ export class GetSignedUrlDataDTO {
             documentUrl: this.documentUrl,
             signedUrl: this.signedUrl,
         };
+    }
+}
+
+export class GetManyDocumentsDataDTO {
+    private readonly documents: DocumentData[];
+
+    constructor(documents: DocumentData[]) {
+        this.documents = documents;
+    }
+
+    getObject() {
+        return this.documents;
     }
 }

@@ -6,7 +6,7 @@
 %}
 
 POST /api/auth/register HTTP/1.1
-Host: http://localhost:3000
+Host: http://localhost:8080
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 ### LOGIN_SUCCESS_201_0
 
 POST /api/auth/login HTTP/1.1
-Host: http://localhost:3000
+Host: http://localhost:8080
 Content-Type: application/json
 
 {
@@ -46,5 +46,18 @@ Content-Type: application/json
 ### GET_SIGNED_URL_SUCCESS_200_0
 
 GET /api/documents/signed-url?fileName=document-1&fileType=application/pdf&fileSize=1000000 HTTP/1.1
-Host: http://localhost:3000
+Host: http://localhost:8080
 Authorization: Bearer {{ACCESS_TOKEN}}
+
+> {%
+  if (response.status === 201) {
+      const SIGNED_URL = response.body.data.signedUrl;
+  
+      client.global.set('SIGNED_URL', SIGNED_URL);
+  }
+%}
+
+
+### PUT_DOCUMENT_SUCCESS_201_1
+
+PUT {{SIGNED_URL}} HTTP/1.1

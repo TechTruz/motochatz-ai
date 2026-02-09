@@ -7,6 +7,7 @@ import AccessToken from '@models/accessToken.js';
 import UnauthorizedError from '@errors/UnauthorizedError.js';
 import { verifyToken } from '@utils/jwt.js';
 import type { JwtClaim } from '@/@types/jwt.js';
+import ForbiddenError from '@errors/ForbiddenError.js';
 
 export async function requireRefreshToken(
     req: Request,
@@ -39,7 +40,7 @@ export async function requireRefreshToken(
 
     req.refreshTokenId = hashedAcquiredRefreshToken;
     req.userId = refreshToken.owner.toString();
-    next();
+    return next();
 }
 
 export async function requireAccessToken(
@@ -68,5 +69,21 @@ export async function requireAccessToken(
 
     req.accessToken = accessToken;
     req.tokenPayload = tokenPayload as JwtClaim;
-    next();
+    return next();
+}
+
+export function authorize({ ownerQueryParam }: { ownerQueryParam?: string }) {
+    return async function (req: Request, _res: Response, next: NextFunction) {
+        if (
+            ownerQueryParam &&
+            req.query?.[ownerQueryParam] &&
+            req.tokenPayload?.[ownerQueryParam] === req.query[ownerQueryParam]
+        ) {
+            return next();
+        }
+
+        throw new ForbiddenError({
+            message: 'You do not have permission to access these document',
+        });
+    };
 }

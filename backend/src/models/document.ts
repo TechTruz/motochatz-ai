@@ -15,7 +15,7 @@ const documentSchema = new Schema(
             type: String,
             required: true,
         },
-        fileMIME: {
+        fileType: {
             type: String,
             required: true,
         },
@@ -39,7 +39,7 @@ const documentSchema = new Schema(
     }
 );
 
-type IDocument = InferSchemaType<typeof documentSchema>;
+export type IDocument = InferSchemaType<typeof documentSchema>;
 export type DocumentDocument = HydratedDocument<IDocument>;
 
 const Document = model('Document', documentSchema);

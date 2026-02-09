@@ -10,13 +10,6 @@ import {
     requireAccessToken,
 } from '@middlewares/auth.middleware.js';
 
-/**
- * @todo Implement all the auth routes
- * - [x] POST /api/auth/register
- * - [x] POST /api/auth/login
- * - [x] GET /api/auth/refresh
- * - [x] DELETE /api/auth/token
- */
 const router = Router();
 
 router.post('/register', registerController);

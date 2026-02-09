@@ -1,29 +1,37 @@
 import type { Request, Response } from 'express';
 import validateData from '@utils/validator.js';
-import { GetSignedUrlSchema } from '@schemas/document.schema.js';
+import {
+    GetSignedUrlSchema,
+    GetManyDocumentsSchema,
+} from '@schemas/document.schema.js';
 import DocumentService from '@services/document.service.js';
-import { GetSignedUrlDataDTO } from '@dtos/document.dto.js';
-import { ResponsePayloadDTO } from '@dtos/api.dto.js';
+import {
+    GetSignedUrlDataDTO,
+    GetManyDocumentsDataDTO,
+} from '@dtos/document.dto.js';
+import { OffsetPaginationDTO, ResponsePayloadDTO } from '@dtos/api.dto.js';
 
-/**
- * @todo Implement this controller
- * - [ ] Validate the query parameters (garageId, limit, page, status, sort)
- * - [ ] Call the service function to get documents from db
- * - [ ] Transform the data including pagination into response object with DTO
- * - [ ] Response with 200 OK and data with pagination
- */
-export declare function getManyDocuments(
-    req: Request,
-    res: Response
-): Promise<Response>;
+export async function getManyDocuments(req: Request, res: Response) {
+    const data = validateData(GetManyDocumentsSchema, req.query);
 
-/**
- * @todo Implement this controller
- * - [x] Validate the query parameters (fileName, fileType (MIME), fileSize (bytes))
- * - [x] Call the service function to generate an s3 pre-signed url
- * - [x] Transform the data into response object with DTO
- * - [x] Response with 200 OK and data.documentId, data.signedUrl, and data.documentUrl
- */
+    const { documents, total } = await DocumentService.getManyDocuments(data);
+
+    const getManyDocumentsData = new GetManyDocumentsDataDTO(documents);
+    const offsetPagination = new OffsetPaginationDTO({
+        limit: data.limit,
+        total,
+        count: documents.length,
+        page: data.page,
+    });
+
+    const responsePayload = new ResponsePayloadDTO(
+        getManyDocumentsData.getObject(),
+        offsetPagination.getObject()
+    );
+
+    return res.status(200).json(responsePayload.getObject());
+}
+
 export async function getSignedUrlController(req: Request, res: Response) {
     const data = validateData(GetSignedUrlSchema, req.query);
 

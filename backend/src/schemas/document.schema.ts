@@ -10,9 +10,36 @@ export const GetSignedUrlSchema = z.strictObject({
     fileType: z.enum(['application/pdf', 'text/plain']),
     fileSize: z
         .string()
-        .regex(/^[0-9]+$/)
-        .transform((val) => Number(val))
+        .transform((val) => parseInt(val))
         .pipe(z.number().lte(1073741824)), // 1073741824 B = 1 GB
 });
 
+export const GetManyDocumentsSchema = z.strictObject({
+    garageId: z.hex().length(24),
+    limit: z
+        .string()
+        .transform((val) => parseInt(val))
+        .pipe(z.number().gte(0))
+        .default(5),
+    page: z
+        .string()
+        .transform((val) => parseInt(val))
+        .pipe(z.number().gte(1))
+        .default(1),
+    status: z.enum(['ALL', 'UPLOADING', 'UPLOADED', 'INDEXED']).default('ALL'),
+    sort: z
+        .enum([
+            'documentId',
+            '-documentId',
+            'fileSize',
+            '-fileSize',
+            'createdAt',
+            '-createdAt',
+            'updatedAt',
+            '-updatedAt',
+        ])
+        .default('documentId'),
+});
+
 export type GetSignedUrlPayload = z.infer<typeof GetSignedUrlSchema>;
+export type GetManyDocumentsPayload = z.infer<typeof GetManyDocumentsSchema>;

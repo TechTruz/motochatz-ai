@@ -39,7 +39,7 @@ export abstract class PaginationDTO {
     }
 }
 
-export abstract class OffsetPaginationDTO extends PaginationDTO {
+export class OffsetPaginationDTO extends PaginationDTO {
     currentPage: number;
     totalPage: number;
 
