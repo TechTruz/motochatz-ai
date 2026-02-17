@@ -1,0 +1,93 @@
+#upload-section {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+#documents-section {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+#documents-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+#documents-list li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#documents-list li a {
+    margin-left: 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+#ingest-stream-section {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+#ingest-stream-section div {
+    margin-bottom: 15px;
+}
+
+#ingest-stream-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#ingest-document-id {
+    width: calc(100% - 22px); /* Adjust for padding and border */
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#ingest-stream-section button {
+    margin-left: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+#ingest-stream-section button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#ingest-status-display {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #e0e7ff; /* Light blue background */
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#ingest-events {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    text-align: left;
+    white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+    word-break: break-all; /* Break long words */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    border-radius: 4px;
+}

@@ -41,5 +41,10 @@ export const GetManyDocumentsSchema = z.strictObject({
         .default('documentId'),
 });
 
+export const IngestDocumentSchema = z.strictObject({
+    documentId: z.hex().length(24),
+});
+
 export type GetSignedUrlPayload = z.infer<typeof GetSignedUrlSchema>;
 export type GetManyDocumentsPayload = z.infer<typeof GetManyDocumentsSchema>;
+export type IngestDocumentPayload = z.infer<typeof IngestDocumentSchema>;

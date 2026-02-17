@@ -15,6 +15,8 @@ declare global {
             S3_SECRET_ACCESS_KEY: string;
             S3_BUCKET_NAME: string;
             S3_PATH_STYLE: 'PATH' | 'VIRTUAL';
+            AI_SERVER_URL: string;
+            AI_API_KEY: string;
         }
     }
 

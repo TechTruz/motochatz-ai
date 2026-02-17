@@ -26,11 +26,15 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
       S3_PATH_STYLE: "PATH"
+      AI_SERVER_URL: "http://mock-ai:3001"
+      AI_API_KEY: ${AI_API_KEY}
     depends_on:
       db:
         condition: service_healthy
       s3:
         condition: service_healthy
+      mock-ai:
+        condition: service_started
   db:
     image: mongo:8.0-noble
     restart: always
@@ -75,6 +79,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+  mock-ai:
+    build:
+      context: ../mocks/mock-ai/
+    image: mock-ai:latest
+    expose:
+      - "3001"
+    environment:
+      AI_API_KEY: ${AI_API_KEY}
 volumes:
   db-data:
   s3-data:
