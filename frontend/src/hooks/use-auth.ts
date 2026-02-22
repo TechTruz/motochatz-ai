@@ -31,13 +31,12 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginRequest) => authService.login(data),
     onSuccess: (response, variables) => {
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken } = response.data;
       const user = getUserFromToken(accessToken);
 
-      // Store email from login request since it's not in the JWT
       user.email = variables.email;
 
-      setAuth(user, { accessToken, refreshToken });
+      setAuth(user, accessToken);
       toast.success("Login successful!");
       navigate("/");
     },
@@ -53,9 +52,17 @@ export const useLogout = () => {
   const navigate = useNavigate();
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
-  return () => {
-    clearAuth();
-    toast.success("Logged out successfully");
-    navigate("/login");
-  };
+  return useMutation({
+    mutationFn: () => authService.logout(),
+    onSuccess: () => {
+      clearAuth();
+      toast.success("Logged out successfully");
+      navigate("/login");
+    },
+    onError: (error: Error) => {
+      clearAuth();
+      toast.error(error.message || "Logout failed");
+      navigate("/login");
+    },
+  });
 };
