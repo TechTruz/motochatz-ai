@@ -12,13 +12,12 @@ export interface User {
 
 export interface AuthTokens {
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface JWTPayload {
   jti: string;
-  sub: string; // user's id
-  name: string; // user's full name
+  sub: string;
+  name: string;
   role: UserRole;
   garageId: string;
   garageName: string;
@@ -56,7 +55,15 @@ export interface RegisterResponse {
 }
 
 export interface LoginResponse {
-  data: AuthTokens;
+  data: {
+    accessToken: string;
+  };
+}
+
+export interface RefreshResponse {
+  data: {
+    accessToken: string;
+  };
 }
 
 export interface ApiError {
