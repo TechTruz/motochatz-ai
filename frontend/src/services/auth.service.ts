@@ -1,10 +1,12 @@
 import { apiClient } from "@/lib/api-client";
+import { authenticatedApiClient } from "@/lib/authenticated-api-client";
 import type {
   User,
   RegisterRequest,
   LoginRequest,
   RegisterResponse,
   LoginResponse,
+  RefreshResponse,
   JWTPayload,
 } from "@/types/auth.types";
 
@@ -37,7 +39,7 @@ export const getUserFromToken = (accessToken: string): User => {
 
   return {
     userId: payload.sub,
-    email: "", // Email is not in the JWT, we'll need to store it separately
+    email: "",
     firstName,
     lastName,
     garageId: payload.garageId,
@@ -46,7 +48,6 @@ export const getUserFromToken = (accessToken: string): User => {
   };
 };
 
-// API Service
 export const authService = {
   async register(data: RegisterRequest): Promise<RegisterResponse> {
     return apiClient.post<RegisterResponse>("/api/auth/register", data);
@@ -54,5 +55,13 @@ export const authService = {
 
   async login(data: LoginRequest): Promise<LoginResponse> {
     return apiClient.post<LoginResponse>("/api/auth/login", data);
+  },
+
+  async refresh(): Promise<RefreshResponse> {
+    return apiClient.get<RefreshResponse>("/api/auth/refresh");
+  },
+
+  async logout(): Promise<void> {
+    return authenticatedApiClient.delete<void>("/api/auth/token");
   },
 };

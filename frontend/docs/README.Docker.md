@@ -48,7 +48,7 @@ docker-compose up -d --build frontend-dev
 Edit file `.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 Ganti dengan URL backend yang sesuai.

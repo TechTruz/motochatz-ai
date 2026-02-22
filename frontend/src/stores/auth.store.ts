@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { cookieUtils, COOKIE_NAMES } from "@/utils/cookies";
 
 export interface User {
   userId: string;
@@ -11,37 +12,55 @@ export interface User {
   role: "USER" | "ADMIN";
 }
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
 interface AuthState {
   user: User | null;
-  tokens: AuthTokens | null;
   isAuthenticated: boolean;
-  setAuth: (user: User, tokens: AuthTokens) => void;
+  setAuth: (user: User, accessToken: string) => void;
   clearAuth: () => void;
-  updateTokens: (tokens: AuthTokens) => void;
+  updateAccessToken: (accessToken: string) => void;
+  getAccessToken: () => string | null;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      tokens: null,
       isAuthenticated: false,
 
-      setAuth: (user, tokens) => set({ user, tokens, isAuthenticated: true }),
+      setAuth: (user, accessToken) => {
+        // Store access token in cookie (expires in 15 minutes)
+        cookieUtils.setCookie(
+          COOKIE_NAMES.ACCESS_TOKEN,
+          accessToken,
+          15 / (60 * 24)
+        );
+        set({ user, isAuthenticated: true });
+      },
 
-      clearAuth: () =>
-        set({ user: null, tokens: null, isAuthenticated: false }),
+      clearAuth: () => {
+        cookieUtils.deleteCookie(COOKIE_NAMES.ACCESS_TOKEN);
+        set({ user: null, isAuthenticated: false });
+      },
 
-      updateTokens: (tokens) => set((state) => ({ ...state, tokens })),
+      updateAccessToken: (accessToken) => {
+        cookieUtils.setCookie(
+          COOKIE_NAMES.ACCESS_TOKEN,
+          accessToken,
+          15 / (60 * 24)
+        );
+      },
+
+      getAccessToken: () => {
+        return cookieUtils.getCookie(COOKIE_NAMES.ACCESS_TOKEN);
+      },
     }),
     {
       name: "motochatz-auth",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

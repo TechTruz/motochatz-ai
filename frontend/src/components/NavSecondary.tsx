@@ -8,8 +8,8 @@ import {
   IconHelp,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth.store";
+import { useLogout } from "@/hooks/use-auth";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -36,12 +36,8 @@ export function NavSecondary({
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const { isAuthenticated, clearAuth } = useAuthStore();
-
-  const handleLogout = () => {
-    clearAuth();
-    toast.success("Logged out successfully");
-  };
+  const { isAuthenticated } = useAuthStore();
+  const { mutate: logout } = useLogout();
 
   return (
     <SidebarGroup {...props}>
@@ -73,7 +69,7 @@ export function NavSecondary({
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={handleLogout}
+                          onClick={() => logout()}
                           className="cursor-pointer"
                         >
                           <IconLogout />
