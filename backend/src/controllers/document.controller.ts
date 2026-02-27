@@ -14,7 +14,7 @@ import { OffsetPaginationDTO, ResponsePayloadDTO } from '@dtos/api.dto.js';
 import Logger from '@utils/logger.js';
 import { CustomError } from '@errors/CustomError.js';
 
-export async function getManyDocuments(req: Request, res: Response) {
+export async function getManyDocumentsController(req: Request, res: Response) {
     const data = validateData(GetManyDocumentsSchema, req.query);
 
     const { documents, total } = await DocumentService.getManyDocuments(data);

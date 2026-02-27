@@ -2,11 +2,13 @@ import { Router } from 'express';
 import authRoutes from '@routes/auth.route.js';
 import documentRoutes from '@routes/document.route.js';
 import streamRoutes from '@routes/stream.route.js';
+import chatRoutes from '@routes/chat.route.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/documents', documentRoutes);
+router.use('/chats', chatRoutes);
 router.use('/stream', streamRoutes);
 
 export default router;

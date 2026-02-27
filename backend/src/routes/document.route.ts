@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-    getManyDocuments,
+    getManyDocumentsController,
     getSignedUrlController,
 } from '@controllers/document.controller.js';
 import { requireAccessToken, authorize } from '@middlewares/auth.middleware.js';
@@ -13,7 +13,7 @@ router.get(
     authorize({
         ownerQueryParam: 'garageId',
     }),
-    getManyDocuments
+    getManyDocumentsController
 );
 router.get('/signed-url', requireAccessToken, getSignedUrlController);
 
