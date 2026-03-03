@@ -1,4 +1,4 @@
-import type { ChatData } from '@/@types/chat.js';
+import type { ChatData, CreateChatData } from '@/@types/chat.js';
 
 export class GetManyChatsDataDTO {
     private readonly chats: ChatData[];
@@ -9,5 +9,17 @@ export class GetManyChatsDataDTO {
 
     getObject() {
         return this.chats;
+    }
+}
+
+export class CreateChatDataDTO {
+    private readonly chat: CreateChatData;
+
+    constructor(chat: CreateChatData) {
+        this.chat = chat;
+    }
+
+    getObject() {
+        return this.chat;
     }
 }

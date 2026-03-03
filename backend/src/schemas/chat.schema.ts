@@ -27,3 +27,7 @@ export const GetManyChatsSchema = z.strictObject({
 });
 
 export type GetManyChatsPayload = z.infer<typeof GetManyChatsSchema>;
+export type CreateChatPayload = {
+    userId: string;
+    garageId: string;
+};

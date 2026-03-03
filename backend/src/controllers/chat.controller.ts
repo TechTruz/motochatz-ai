@@ -3,7 +3,7 @@ import { GetManyChatsSchema } from '@schemas/chat.schema.js';
 import validateData from '@utils/validator.js';
 import ChatService from '@services/chat.service.js';
 import { OffsetPaginationDTO, ResponsePayloadDTO } from '@dtos/api.dto.js';
-import { GetManyChatsDataDTO } from '@dtos/chat.dto.js';
+import { GetManyChatsDataDTO, CreateChatDataDTO } from '@dtos/chat.dto.js';
 
 export async function getManyChatsController(req: Request, res: Response) {
     const data = validateData(GetManyChatsSchema, req.query);
@@ -31,10 +31,18 @@ export async function getManyChatsController(req: Request, res: Response) {
 //     res: Response
 // ): Promise<Response<any, Record<string, any>>>;
 //
-// export declare function createChatController(
-//     req: Request,
-//     res: Response
-// ): Promise<Response<any, Record<string, any>>>;
+export async function createChatController(req: Request, res: Response) {
+    const { chat } = await ChatService.createChat({
+        userId: req.tokenPayload?.sub as string,
+        garageId: req.tokenPayload?.garageId as string,
+    });
+
+    const createChatData = new CreateChatDataDTO(chat);
+
+    const responsePayload = new ResponsePayloadDTO(createChatData.getObject());
+
+    return res.status(201).json(responsePayload.getObject());
+}
 //
 // export declare function streamChatController(
 //     req: Request,

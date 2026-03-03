@@ -8,3 +8,10 @@ export interface ChatData {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface CreateChatData {
+    chatId: string;
+    remainingQuota: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
