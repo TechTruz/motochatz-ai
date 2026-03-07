@@ -9,8 +9,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    environment:
-      - VITE_API_BASE_URL=http://localhost:8080
+    env_file:
+      - .env.docker
     networks:
       - motochatz-network
     restart: unless-stopped
