@@ -15,3 +15,20 @@ export interface CreateChatData {
     createdAt: Date;
     updatedAt: Date;
 }
+
+interface ReferencedDocuments {
+    documentId: string;
+    documentUrl: string;
+}
+
+export interface MessageData {
+    messageId: string;
+    chatId: string;
+    userId: string | null;
+    userFirstName: string | null;
+    userLastName: string | null;
+    content: string | null;
+    referencedDocuments: ReferencedDocuments[] | null;
+    createdAt: Date;
+    updatedAt: Date;
+}

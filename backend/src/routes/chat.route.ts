@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
     getManyChatsController,
-    // getManyChatMessagesController,
+    getManyChatMessagesController,
     createChatController,
 } from '@controllers/chat.controller.js';
 import { requireAccessToken, authorize } from '@middlewares/auth.middleware.js';
@@ -22,7 +22,7 @@ router.get(
     }),
     getManyChatsController
 );
-// router.get('/:id/messages', requireAccessToken, getManyChatMessagesController);
+router.get('/:id/messages', requireAccessToken, getManyChatMessagesController);
 router.post('/', requireAccessToken, createChatController);
 
 export default router;

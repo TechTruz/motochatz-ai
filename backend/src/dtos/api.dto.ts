@@ -80,3 +80,50 @@ export class OffsetPaginationDTO extends PaginationDTO {
         };
     }
 }
+
+export class CursorPaginationDTO extends PaginationDTO {
+    latestCursor: string | null;
+    oldestCursor: string | null;
+    sort: string;
+
+    constructor({
+        latestCursor,
+        oldestCursor,
+        sort,
+        total,
+        count,
+        hasNextPage,
+        hasPrevPage,
+    }: {
+        latestCursor: string | null;
+        oldestCursor: string | null;
+        sort: string;
+        total: number;
+        count: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+    }) {
+        super({
+            totalRecords: total,
+            currentRecords: count,
+            hasNextPage,
+            hasPrevPage,
+        });
+
+        this.latestCursor = latestCursor;
+        this.oldestCursor = oldestCursor;
+        this.sort = sort;
+    }
+
+    getObject() {
+        return {
+            currentRecords: this.currentRecords,
+            totalRecords: this.totalRecords,
+            latestCursor: this.latestCursor,
+            oldestCursor: this.oldestCursor,
+            sort: this.sort,
+            hasNextPage: this.hasNextPage,
+            hasPrevPage: this.hasPrevPage,
+        };
+    }
+}

@@ -1,9 +1,21 @@
 import type { Request, Response } from 'express';
-import { CreateChatSchema, GetManyChatsSchema } from '@schemas/chat.schema.js';
+import {
+    CreateChatSchema,
+    GetManyChatsSchema,
+    GetManyChatMessagesSchema,
+} from '@schemas/chat.schema.js';
 import validateData from '@utils/validator.js';
 import ChatService from '@services/chat.service.js';
-import { OffsetPaginationDTO, ResponsePayloadDTO } from '@dtos/api.dto.js';
-import { GetManyChatsDataDTO, CreateChatDataDTO } from '@dtos/chat.dto.js';
+import {
+    OffsetPaginationDTO,
+    CursorPaginationDTO,
+    ResponsePayloadDTO,
+} from '@dtos/api.dto.js';
+import {
+    GetManyChatsDataDTO,
+    CreateChatDataDTO,
+    GetManyChatMessagesDTO,
+} from '@dtos/chat.dto.js';
 
 export async function getManyChatsController(req: Request, res: Response) {
     const data = validateData(GetManyChatsSchema, req.query);
@@ -25,10 +37,26 @@ export async function getManyChatsController(req: Request, res: Response) {
     return res.status(200).json(responsePayload.getObject());
 }
 
-// export declare function getManyChatMessagesController(
-//     req: Request,
-//     res: Response
-// ): Promise<Response<any, Record<string, any>>>;
+export async function getManyChatMessagesController(
+    req: Request,
+    res: Response
+) {
+    const data = validateData(GetManyChatMessagesSchema, {
+        chatId: req.params?.id as string,
+        ...req.query,
+    });
+
+    const { messages, meta } = await ChatService.getManyChatMessages(data);
+
+    const getManyChatMessagesData = new GetManyChatMessagesDTO(messages);
+    const cursorPagination = new CursorPaginationDTO(meta);
+    const responsePayload = new ResponsePayloadDTO(
+        getManyChatMessagesData.getObject(),
+        cursorPagination.getObject()
+    );
+
+    return res.status(200).json(responsePayload.getObject());
+}
 
 export async function createChatController(req: Request, res: Response) {
     const data = validateData(CreateChatSchema, {

@@ -80,5 +80,7 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "experimentalDecorators": true
+    // "maxNodeModuleJsDepth": 1,
+    // "allowJs": true
   }
 }
