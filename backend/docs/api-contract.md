@@ -873,7 +873,6 @@ Send a message to assistant (SSE).
     - `message`
         - `"id: <string>\n"`
         - `"data: { "content": <string>, "timestamp": <date> }\n\n"`
-            > stream ends with `"data: [DONE]\n\n"`
 
 #### Example
 

@@ -10,10 +10,12 @@ const chatSchema = new Schema(
         garage: {
             type: Schema.Types.ObjectId,
             ref: 'garage',
+            required: true,
         },
         user: {
             type: Schema.Types.ObjectId,
             ref: 'user',
+            required: true,
         },
         status: {
             type: String,

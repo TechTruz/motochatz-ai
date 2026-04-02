@@ -3,6 +3,7 @@ import {
     CreateChatSchema,
     GetManyChatsSchema,
     GetManyChatMessagesSchema,
+    StreamChatSchema,
 } from '@schemas/chat.schema.js';
 import validateData from '@utils/validator.js';
 import ChatService from '@services/chat.service.js';
@@ -16,6 +17,8 @@ import {
     CreateChatDataDTO,
     GetManyChatMessagesDTO,
 } from '@dtos/chat.dto.js';
+import Logger from '@utils/logger.js';
+import { CustomError } from '@errors/CustomError.js';
 
 export async function getManyChatsController(req: Request, res: Response) {
     const data = validateData(GetManyChatsSchema, req.query);
@@ -72,7 +75,56 @@ export async function createChatController(req: Request, res: Response) {
     return res.status(201).json(responsePayload.getObject());
 }
 
-// export declare function streamChatController(
-//     req: Request,
-//     res: Response
-// ): Promise<Response<any, Record<string, any>>>;
+export async function streamChatController(req: Request, res: Response) {
+    const data = validateData(StreamChatSchema, {
+        chatId: req.query?.chatId as string,
+        message: req.body?.message as string,
+    });
+
+    res.set({
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+        'X-Accel-Buffering': 'no',
+    });
+    res.flushHeaders();
+
+    const abortController = new AbortController();
+    const aiResponseStream = ChatService.getChatResponse(
+        data,
+        abortController.signal
+    );
+
+    req.on('close', () => {
+        if (!abortController.signal.aborted) {
+            abortController.abort();
+        }
+    });
+
+    aiResponseStream.on('error', (err: Error | CustomError) => {
+        let errorDetails = {
+            code: 502,
+            message: err.message,
+        };
+
+        if (err instanceof CustomError) {
+            errorDetails = {
+                code: err.statusCode,
+                message: err.message,
+            };
+        } else {
+            Logger.error('SSE error:', err);
+            Logger.error('SSE error stack:', err.stack);
+        }
+
+        if (!abortController.signal.aborted) {
+            abortController.abort();
+        }
+
+        res.write(`event: error\n`);
+        res.write(`data: ${JSON.stringify(errorDetails)}\n\n`);
+        res.end();
+    });
+
+    aiResponseStream.pipe(res);
+}

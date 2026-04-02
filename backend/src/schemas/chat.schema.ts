@@ -42,8 +42,14 @@ export const GetManyChatMessagesSchema = z.strictObject({
     sort: z.enum(['createdAt', '-createdAt']).default('-createdAt'),
 });
 
+export const StreamChatSchema = z.strictObject({
+    chatId: z.hex().length(24),
+    message: z.string(),
+});
+
 export type GetManyChatsPayload = z.infer<typeof GetManyChatsSchema>;
 export type CreateChatPayload = z.infer<typeof CreateChatSchema>;
 export type GetManyChatMessagesPayload = z.infer<
     typeof GetManyChatMessagesSchema
 >;
+export type StreamChatPayload = z.infer<typeof StreamChatSchema>;

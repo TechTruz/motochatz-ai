@@ -1,15 +1,21 @@
 import { startSession, Types } from 'mongoose';
+import { PassThrough, Readable } from 'stream';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 import type {
     CreateChatPayload,
     GetManyChatMessagesPayload,
     GetManyChatsPayload,
+    StreamChatPayload,
 } from '@schemas/chat.schema.js';
 import Chat from '@models/chat.js';
 import User from '@models/user.js';
 import Message from '@models/message.js';
+import Document from '@models/document.js';
 import type { ChatData, CreateChatData, MessageData } from '@/@types/chat.js';
 import Garage from '@models/garage.js';
 import NotFoundError from '@errors/NotFoundError.js';
+import BadGatewayError from '@errors/BadGatewayError.js';
+import Logger from '@utils/logger.js';
 
 class ChatService {
     static async getManyChats(payload: GetManyChatsPayload): Promise<{
@@ -212,6 +218,198 @@ class ChatService {
             messages,
             meta,
         };
+    }
+
+    static getChatResponse(
+        payload: StreamChatPayload,
+        signal?: AbortSignal
+    ): Readable {
+        const passThrough = new PassThrough();
+
+        (async () => {
+            try {
+                const chat = await Chat.findOne({
+                    _id: new Types.ObjectId(payload.chatId),
+                    status: {
+                        $in: ['ONGOING'],
+                    },
+                    remainingQuota: {
+                        $gt: 0,
+                    },
+                });
+
+                if (!chat) {
+                    passThrough.destroy(
+                        new NotFoundError({
+                            message: 'Chat does not exist',
+                        })
+                    );
+
+                    return;
+                }
+
+                const messages = await Message.find(
+                    { chat: chat._id },
+                    { content: 1, user: 1, createdAt: 1 }
+                )
+                    .sort({ createdAt: -1 })
+                    .limit(10);
+
+                const messageHistory = messages.map((msg) => {
+                    return {
+                        role: msg.user ? 'USER' : 'ASSISTANT',
+                        message: msg.content,
+                        createdAt: msg.createdAt,
+                    };
+                });
+
+                await Message.insertOne({
+                    chat: chat._id,
+                    user: chat.user?._id,
+                    content: payload.message,
+                    referencedDocuments: [],
+                });
+
+                const requestBody = {
+                    query: payload.message,
+                    history: messageHistory,
+                };
+
+                let chatResponse = '';
+
+                await fetchEventSource(
+                    `${process.env.AI_SERVER_URL}/chat/stream`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': process.env.AI_API_KEY,
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: signal ?? null,
+                        openWhenHidden: true,
+                        onopen: async (response) => {
+                            if (!response.ok) {
+                                const errorBody = await response.text();
+
+                                Logger.error(
+                                    `AI server responded with ${response.status} ${response.statusText}: ${errorBody}`
+                                );
+
+                                passThrough.destroy(
+                                    new BadGatewayError({
+                                        message:
+                                            'There is a problem with upstream AI server',
+                                    })
+                                );
+                            }
+                        },
+                        onmessage: (msg) => {
+                            if (msg.event === 'message') {
+                                const responseChunk = JSON.parse(msg.data);
+                                chatResponse += `${responseChunk.content}`;
+                            } else if (msg.event === 'status') {
+                                const statusUpdate = JSON.parse(msg.data);
+
+                                if (statusUpdate.status === 'ANSWERED') {
+                                    let referencedDocuments: {
+                                        documentId: Types.ObjectId;
+                                        documentUrl: string;
+                                    }[] = [];
+
+                                    if (
+                                        statusUpdate.documentReferenceId &&
+                                        statusUpdate.documentReferenceId
+                                            .length > 0
+                                    ) {
+                                        Document.find({
+                                            _id: {
+                                                $in: statusUpdate.documentReferenceId.map(
+                                                    (id: string) =>
+                                                        new Types.ObjectId(id)
+                                                ),
+                                            },
+                                        })
+                                            .exec()
+                                            .then((docs) => {
+                                                referencedDocuments = docs.map(
+                                                    (doc) => {
+                                                        return {
+                                                            documentId: doc._id,
+                                                            documentUrl:
+                                                                doc.documentUrl,
+                                                        };
+                                                    }
+                                                );
+                                            })
+                                            .catch((err) => {
+                                                Logger.error(err);
+                                                throw new Error(
+                                                    'Failed when querying documents for chat response references'
+                                                );
+                                            });
+                                    }
+
+                                    Message.insertOne({
+                                        content: chatResponse,
+                                        referencedDocuments:
+                                            referencedDocuments.map((doc) => {
+                                                return new Types.ObjectId(
+                                                    doc.documentId
+                                                );
+                                            }),
+                                    }).catch((err) => {
+                                        Logger.error(err);
+                                        throw new Error(
+                                            'Failed to insert AI chat response to the database'
+                                        );
+                                    });
+
+                                    msg.data = JSON.stringify({
+                                        status: statusUpdate.status,
+                                        timestamp: statusUpdate.timestamp,
+                                        referencedDocuments,
+                                    });
+                                }
+                            }
+
+                            let sseString = '';
+                            if (msg.id) {
+                                sseString += `id: ${msg.id}\n`;
+                            }
+
+                            if (msg.event) {
+                                sseString += `event: ${msg.event}\n`;
+                            }
+
+                            sseString += `data: ${msg.data}\n\n`;
+                            passThrough.write(sseString);
+                        },
+                        onclose: () => {
+                            passThrough.end();
+                        },
+                        onerror: (err) => {
+                            if (err instanceof TypeError) {
+                                const badGatewayError = new BadGatewayError({
+                                    message:
+                                        'There is a problem with upstream AI server',
+                                });
+
+                                passThrough.destroy(badGatewayError);
+                                throw badGatewayError;
+                            }
+
+                            passThrough.destroy(err);
+                            throw err;
+                        },
+                    }
+                );
+            } catch (error) {
+                passThrough.destroy(error as Error);
+            }
+        })();
+
+        return passThrough;
     }
 }
 

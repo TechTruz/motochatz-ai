@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireAccessToken } from '@middlewares/auth.middleware.js';
 import { ingestDocumentController } from '@controllers/document.controller.js';
-// import { streamChatController } from '@controllers/chat.controller.js';
+import { streamChatController } from '@controllers/chat.controller.js';
 
 /**
  * @todo Implement all the stream routes
@@ -11,6 +11,6 @@ import { ingestDocumentController } from '@controllers/document.controller.js';
 const router = Router();
 
 router.get('/ingest', requireAccessToken, ingestDocumentController);
-// router.get('/chat', requireAccessToken, streamChatController);
+router.post('/chat', requireAccessToken, streamChatController);
 
 export default router;

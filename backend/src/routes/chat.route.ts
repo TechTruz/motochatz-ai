@@ -9,7 +9,7 @@ import { requireAccessToken, authorize } from '@middlewares/auth.middleware.js';
 /**
  * @todo Implement all chat routes
  * - [x] GET /api/chats
- * - [ ] GET /api/chats/:chatId/messages
+ * - [x] GET /api/chats/:chatId/messages
  * - [x] POST /api/chats
  */
 const router = Router();
