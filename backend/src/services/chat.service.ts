@@ -1,3 +1,17 @@
+// Workaround for @microsoft/fetch-event-source `document is not defined`
+// See: https://github.com/rayjp2010/fetch-event-source/issues/35
+if (!globalThis.window) {
+    globalThis.window = {
+        fetch: globalThis.fetch,
+        setTimeout: globalThis.setTimeout,
+        clearTimeout: globalThis.clearTimeout,
+    };
+}
+
+if (!globalThis.document) {
+    globalThis.document = { removeEventListener: () => {}, body: {} };
+}
+
 import { startSession, Types } from 'mongoose';
 import { PassThrough, Readable } from 'stream';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -267,7 +281,6 @@ class ChatService {
                     chat: chat._id,
                     user: chat.user?._id,
                     content: payload.message,
-                    referencedDocuments: [],
                 });
 
                 const requestBody = {
@@ -304,70 +317,70 @@ class ChatService {
                                 );
                             }
                         },
-                        onmessage: (msg) => {
+                        onmessage: async (msg) => {
+                            const responseChunk = JSON.parse(msg.data);
+
                             if (msg.event === 'message') {
-                                const responseChunk = JSON.parse(msg.data);
                                 chatResponse += `${responseChunk.content}`;
                             } else if (msg.event === 'status') {
-                                const statusUpdate = JSON.parse(msg.data);
-
-                                if (statusUpdate.status === 'ANSWERED') {
+                                if (responseChunk.status === 'ANSWERED') {
                                     let referencedDocuments: {
                                         documentId: Types.ObjectId;
                                         documentUrl: string;
                                     }[] = [];
 
                                     if (
-                                        statusUpdate.documentReferenceId &&
-                                        statusUpdate.documentReferenceId
+                                        responseChunk.documentReferenceId &&
+                                        Array.isArray(
+                                            responseChunk.documentReferenceId
+                                        ) &&
+                                        responseChunk.documentReferenceId
                                             .length > 0
                                     ) {
-                                        Document.find({
-                                            _id: {
-                                                $in: statusUpdate.documentReferenceId.map(
-                                                    (id: string) =>
-                                                        new Types.ObjectId(id)
-                                                ),
-                                            },
-                                        })
-                                            .exec()
-                                            .then((docs) => {
-                                                referencedDocuments = docs.map(
-                                                    (doc) => {
-                                                        return {
-                                                            documentId: doc._id,
-                                                            documentUrl:
-                                                                doc.documentUrl,
-                                                        };
-                                                    }
-                                                );
-                                            })
-                                            .catch((err) => {
-                                                Logger.error(err);
-                                                throw new Error(
-                                                    'Failed when querying documents for chat response references'
-                                                );
+                                        try {
+                                            const docs = await Document.find({
+                                                _id: {
+                                                    $in: responseChunk.documentReferenceId.map(
+                                                        (id: string) =>
+                                                            new Types.ObjectId(
+                                                                id
+                                                            )
+                                                    ),
+                                                },
                                             });
+
+                                            referencedDocuments = docs.map(
+                                                (doc) => ({
+                                                    documentId: doc._id,
+                                                    documentUrl:
+                                                        doc.documentUrl,
+                                                })
+                                            );
+                                        } catch (err) {
+                                            Logger.error(err);
+                                        }
                                     }
 
-                                    Message.insertOne({
-                                        content: chatResponse,
-                                        referencedDocuments:
-                                            referencedDocuments.map((doc) => {
-                                                return new Types.ObjectId(
-                                                    doc.documentId
-                                                );
-                                            }),
-                                    }).catch((err) => {
-                                        Logger.error(err);
-                                        throw new Error(
-                                            'Failed to insert AI chat response to the database'
+                                    try {
+                                        await Message.insertOne({
+                                            content: chatResponse,
+                                            referencedDocuments:
+                                                referencedDocuments.map(
+                                                    (doc) => doc.documentId
+                                                ),
+                                        });
+
+                                        await Chat.updateOne(
+                                            { _id: chat._id },
+                                            { $inc: { remainingQuota: -1 } }
                                         );
-                                    });
+                                    } catch (err) {
+                                        Logger.error(err);
+                                    }
 
                                     msg.data = JSON.stringify({
-                                        status: statusUpdate.status,
-                                        timestamp: statusUpdate.timestamp,
+                                        status: responseChunk.status,
+                                        timestamp: responseChunk.timestamp,
                                         referencedDocuments,
                                     });
                                 }
