@@ -23,7 +23,7 @@ interface ReferencedDocuments {
 
 export interface MessageData {
     messageId: string;
-    chatId: string;
+    role: 'USER' | 'ASSISTANT';
     userId: string | null;
     userFirstName: string | null;
     userLastName: string | null;

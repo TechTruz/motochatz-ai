@@ -12,6 +12,11 @@ const messageSchema = new Schema(
             ref: 'user',
             required: false,
         },
+        role: {
+            type: String,
+            enum: ['USER', 'ASSISTANT'],
+            required: true,
+        },
         content: {
             type: String,
             required: true,

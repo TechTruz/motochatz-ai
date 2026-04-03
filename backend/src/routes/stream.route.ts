@@ -6,7 +6,7 @@ import { streamChatController } from '@controllers/chat.controller.js';
 /**
  * @todo Implement all the stream routes
  * - [x] GET /api/stream/ingest
- * - [ ] GET /api/stream/chat
+ * - [x] GET /api/stream/chat
  */
 const router = Router();
 

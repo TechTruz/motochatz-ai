@@ -12,7 +12,7 @@ if (!globalThis.document) {
     globalThis.document = { removeEventListener: () => {}, body: {} };
 }
 
-import { startSession, Types } from 'mongoose';
+import { startSession, Types, type UpdateQuery } from 'mongoose';
 import { PassThrough, Readable } from 'stream';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import type {
@@ -21,14 +21,15 @@ import type {
     GetManyChatsPayload,
     StreamChatPayload,
 } from '@schemas/chat.schema.js';
-import Chat from '@models/chat.js';
+import Chat, { type IChat } from '@models/chat.js';
 import User from '@models/user.js';
 import Message from '@models/message.js';
 import Document from '@models/document.js';
-import type { ChatData, CreateChatData, MessageData } from '@/@types/chat.js';
 import Garage from '@models/garage.js';
+import type { ChatData, CreateChatData, MessageData } from '@/@types/chat.js';
 import NotFoundError from '@errors/NotFoundError.js';
 import BadGatewayError from '@errors/BadGatewayError.js';
+import BadRequestError from '@errors/BadRequestError.js';
 import Logger from '@utils/logger.js';
 
 class ChatService {
@@ -46,17 +47,28 @@ class ChatService {
 
             const chats: ChatData[] = await Chat.aggregate()
                 .match(filters)
+                .lookup({
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'userInfo',
+                })
+                .unwind({
+                    path: '$userInfo',
+                    preserveNullAndEmptyArrays: true,
+                })
                 .addFields({
                     chatId: '$_id',
-                    userId: 'users.$_id',
-                    userFirstName: 'users.firstName',
-                    userLastName: 'users.lastName',
+                    userId: '$userInfo._id',
+                    userFirstName: '$userInfo.firstName',
+                    userLastName: '$userInfo.lastName',
                 })
                 .project({
                     _id: 0,
                     __v: 0,
                     garage: 0,
                     user: 0,
+                    userInfo: 0,
                 })
                 .sort({
                     [payload.sort.includes('chatId')
@@ -149,14 +161,30 @@ class ChatService {
 
                 const messages: MessageData[] = await Message.aggregate()
                     .match(filters)
+                    .lookup({
+                        from: 'users',
+                        localField: 'user',
+                        foreignField: '_id',
+                        as: 'userInfo',
+                    })
+                    .unwind({
+                        path: '$userInfo',
+                        preserveNullAndEmptyArrays: true,
+                    })
+                    .lookup({
+                        from: 'documents',
+                        localField: 'referencedDocuments',
+                        foreignField: '_id',
+                        as: 'docs',
+                    })
                     .addFields({
                         messageId: '$_id',
-                        userId: 'users.$_id',
-                        userFirstName: 'users.firstName',
-                        userLastName: 'users.lastName',
+                        userId: '$userInfo._id',
+                        userFirstName: '$userInfo.firstName',
+                        userLastName: '$userInfo.lastName',
                         referencedDocuments: {
                             $map: {
-                                input: '$referencedDocuments',
+                                input: '$docs',
                                 as: 'doc',
                                 in: {
                                     documentId: '$$doc._id',
@@ -170,6 +198,8 @@ class ChatService {
                         __v: 0,
                         user: 0,
                         chat: 0,
+                        userInfo: 0,
+                        docs: 0,
                     })
                     .sort({
                         [payload.sort.includes('-')
@@ -244,12 +274,6 @@ class ChatService {
             try {
                 const chat = await Chat.findOne({
                     _id: new Types.ObjectId(payload.chatId),
-                    status: {
-                        $in: ['ONGOING'],
-                    },
-                    remainingQuota: {
-                        $gt: 0,
-                    },
                 });
 
                 if (!chat) {
@@ -260,18 +284,29 @@ class ChatService {
                     );
 
                     return;
+                } else if (
+                    chat.remainingQuota <= 0 ||
+                    chat.status !== 'ONGOING'
+                ) {
+                    passThrough.destroy(
+                        new BadRequestError({
+                            message: 'Usage limit reached',
+                        })
+                    );
+
+                    return;
                 }
 
                 const messages = await Message.find(
                     { chat: chat._id },
-                    { content: 1, user: 1, createdAt: 1 }
+                    { content: 1, role: 1, createdAt: 1 }
                 )
                     .sort({ createdAt: -1 })
                     .limit(10);
 
                 const messageHistory = messages.map((msg) => {
                     return {
-                        role: msg.user ? 'USER' : 'ASSISTANT',
+                        role: msg.role,
                         message: msg.content,
                         createdAt: msg.createdAt,
                     };
@@ -280,6 +315,7 @@ class ChatService {
                 await Message.insertOne({
                     chat: chat._id,
                     user: chat.user?._id,
+                    role: 'USER',
                     content: payload.message,
                 });
 
@@ -363,6 +399,8 @@ class ChatService {
 
                                     try {
                                         await Message.insertOne({
+                                            chat: chat._id,
+                                            role: 'ASSISTANT',
                                             content: chatResponse,
                                             referencedDocuments:
                                                 referencedDocuments.map(
@@ -370,9 +408,17 @@ class ChatService {
                                                 ),
                                         });
 
+                                        const updateData: UpdateQuery<IChat> = {
+                                            $inc: { remainingQuota: -1 },
+                                        };
+
+                                        if (chat.remainingQuota === 1) {
+                                            updateData.status = 'ENDED';
+                                        }
+
                                         await Chat.updateOne(
                                             { _id: chat._id },
-                                            { $inc: { remainingQuota: -1 } }
+                                            updateData
                                         );
                                     } catch (err) {
                                         Logger.error(err);

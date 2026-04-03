@@ -46,6 +46,30 @@
             </ul>
         </div>
 
+        <div id="chats-section" style="display: none;">
+            <h2>Chat Sessions</h2>
+            <button id="create-chat-button">Start New Chat</button>
+            <p id="chats-message"></p>
+            <ul id="chats-list">
+                <!-- Chats will be listed here -->
+            </ul>
+        </div>
+
+        <div id="chat-window-section" style="display: none;">
+            <h2 id="chat-title">Chat</h2>
+            <div id="messages-container">
+                <div id="messages-list"></div>
+            </div>
+            <div id="chat-status-container">
+                Status: <span id="chat-status-display">Idle</span>
+            </div>
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Type your message..." required>
+                <button type="submit" id="send-message-button">Send</button>
+            </form>
+            <button id="back-to-chats-button">Back to Chats</button>
+        </div>
+
         <div id="ingest-stream-section" style="display: none;">
             <h2>Stream Ingest Test</h2>
             <div>

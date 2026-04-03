@@ -691,6 +691,7 @@ Get messages from specific chat session.
         "data": [
             {
                 "messageId": <string>,
+                "role": "USER" | "ASSISTANT",
                 "userId": <string> | null,
                 "userFirstName": <string> | null,
                 "userLastName": <string> | null
@@ -737,6 +738,7 @@ Get messages from specific chat session.
         "data": [
             {
                 "messageId": "6970755dad814745c68ce5b0",
+                "role": "USER",
                 "userId": "6970756ee3d1d377ce8ce5b0",
                 "userFirstName": "John",
                 "userLastName": "Doe"
@@ -746,6 +748,7 @@ Get messages from specific chat session.
             },
             {
                 "messageId": "6970764e37d24577fe8ce5b0",
+                "role": "ASSISTANT",
                 "userId": null,
                 "userFirstName": null,
                 "userLastName": null,
