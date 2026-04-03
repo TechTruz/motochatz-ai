@@ -14,6 +14,20 @@ const documentsList = document.getElementById('documents-list');
 const documentsMessage = document.getElementById('documents-message');
 const documentsSection = document.getElementById('documents-section');
 
+// Chat DOM elements
+const chatsSection = document.getElementById('chats-section');
+const chatsList = document.getElementById('chats-list');
+const chatsMessage = document.getElementById('chats-message');
+const createChatButton = document.getElementById('create-chat-button');
+const chatWindowSection = document.getElementById('chat-window-section');
+const chatTitle = document.getElementById('chat-title');
+const messagesList = document.getElementById('messages-list');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatStatusDisplay = document.getElementById('chat-status-display');
+const backToChatsButton = document.getElementById('back-to-chats-button');
+const sendMessageButton = document.getElementById('send-message-button');
+
 // New elements for ingest stream test
 const ingestStreamSection = document.getElementById('ingest-stream-section');
 const ingestDocumentIdInput = document.getElementById('ingest-document-id');
@@ -24,6 +38,8 @@ const ingestStatusDisplay = document.getElementById('ingest-status-display');
 
 let authToken = null;
 let ingestAbortController = null; // For cancelling the ingest stream
+let chatAbortController = null; // For cancelling the chat stream
+let currentChatId = null;
 
 // Helper function to decode JWT
 function decodeJwt(token) {
@@ -101,6 +117,198 @@ async function fetchDocuments() {
     } catch (error) {
         displayMessage(documentsMessage, 'Network error while fetching documents.');
         console.error('Fetch documents error:', error);
+    }
+}
+
+// Function to fetch and display chat sessions
+async function fetchChats() {
+    chatsList.innerHTML = '';
+    displayMessage(chatsMessage, 'Fetching chats...', false);
+
+    if (!authToken) return;
+
+    const decodedToken = decodeJwt(authToken);
+    if (!decodedToken || !decodedToken.garageId) return;
+    const garageId = decodedToken.garageId;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/chats?garageId=${garageId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            chatsMessage.textContent = '';
+            if (data.data && data.data.length > 0) {
+                data.data.forEach(chat => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        Chat ID: ${chat.chatId} - Status: ${chat.status} - Quota: ${chat.remainingQuota}
+                        <button onclick="openChat('${chat.chatId}')">Open</button>
+                    `;
+                    chatsList.appendChild(listItem);
+                });
+            } else {
+                displayMessage(chatsMessage, 'No chat sessions found.', false);
+            }
+        }
+    } catch (error) {
+        console.error('Fetch chats error:', error);
+    }
+}
+
+// Function to create a new chat session
+async function createChat() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/chats`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            openChat(data.data.chatId);
+        } else {
+            alert('Failed to create chat: ' + (data.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Create chat error:', error);
+    }
+}
+
+// Function to open a chat window
+async function openChat(chatId) {
+    currentChatId = chatId;
+    chatTitle.textContent = `Chat: ${chatId}`;
+    messagesList.innerHTML = '';
+    
+    chatsSection.style.display = 'none';
+    documentsSection.style.display = 'none';
+    uploadSection.style.display = 'none';
+    ingestStreamSection.style.display = 'none';
+    chatWindowSection.style.display = 'block';
+
+    await fetchMessages(chatId);
+}
+
+// Function to fetch and display messages for a chat
+async function fetchMessages(chatId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/chats/${chatId}/messages?limit=50&sort=createdAt`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            data.data.forEach(msg => {
+                appendMessage(msg.role === 'USER' ? 'User' : 'Assistant', msg.content);
+            });
+        }
+    } catch (error) {
+        console.error('Fetch messages error:', error);
+    }
+}
+
+// Helper to append a message to the list
+function appendMessage(sender, content) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${sender.toLowerCase()}`;
+    msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="content">${content}</span>`;
+    messagesList.appendChild(msgDiv);
+    messagesList.scrollTop = messagesList.scrollHeight;
+    return msgDiv;
+}
+
+// Function to handle chat streaming
+async function startChatStream(message) {
+    if (!currentChatId) return;
+
+    appendMessage('User', message);
+    chatInput.value = '';
+    
+    const assistantMsgDiv = appendMessage('Assistant', '');
+    const assistantContentSpan = assistantMsgDiv.querySelector('.content');
+
+    chatStatusDisplay.textContent = 'Connecting...';
+    sendMessageButton.disabled = true;
+
+    chatAbortController = new AbortController();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/stream/chat?chatId=${currentChatId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message }),
+            signal: chatAbortController.signal
+        });
+
+        if (!response.ok) throw new Error('Stream error');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            let boundary;
+            while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+                const raw = buffer.slice(0, boundary);
+                buffer = buffer.slice(boundary + 2);
+
+                const lines = raw.split('\n');
+                let event = 'message';
+                let data = '';
+
+                lines.forEach(line => {
+                    if (line.startsWith('event:')) event = line.slice(6).trim();
+                    else if (line.startsWith('data:')) data = line.slice(5).trim();
+                });
+
+                if (event === 'message') {
+                    if (data === '[DONE]') continue;
+                    try {
+                        const parsed = JSON.parse(data);
+                        assistantContentSpan.textContent += parsed.content || parsed.message || '';
+                    } catch (e) {
+                        assistantContentSpan.textContent += data;
+                    }
+                } else if (event === 'status') {
+                    try {
+                        const parsed = JSON.parse(data);
+                        chatStatusDisplay.textContent = parsed.status;
+                    } catch (e) {}
+                } else if (event === 'error') {
+                    try {
+                        const parsed = JSON.parse(data);
+                        chatStatusDisplay.textContent = `Error: ${parsed.message}`;
+                        assistantContentSpan.textContent = `[Error: ${parsed.message}]`;
+                        assistantContentSpan.style.color = 'red';
+                    } catch (e) {
+                        chatStatusDisplay.textContent = 'Error: Unknown stream error';
+                    }
+                }
+            }
+        }
+        chatStatusDisplay.textContent = 'Finished';
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            chatStatusDisplay.textContent = 'Aborted';
+        } else {
+            console.error('Chat stream error:', error);
+            chatStatusDisplay.textContent = 'Error';
+        }
+    } finally {
+        sendMessageButton.disabled = false;
+        chatAbortController = null;
     }
 }
 
@@ -280,8 +488,10 @@ loginForm.addEventListener('submit', async (e) => {
             authSection.style.display = 'none';
             uploadSection.style.display = 'block';
             documentsSection.style.display = 'block'; // Show documents section
+            chatsSection.style.display = 'block'; // Show chats section
             ingestStreamSection.style.display = 'block'; // Show ingest stream section
             fetchDocuments(); // Fetch documents after successful login
+            fetchChats(); // Fetch chats after successful login
             loginForm.reset();
             // Clear registration message after successful login
             authMessage.textContent = '';
@@ -312,16 +522,22 @@ logoutButton.addEventListener('click', async () => {
             authSection.style.display = 'block';
             uploadSection.style.display = 'none';
             documentsSection.style.display = 'none'; // Hide documents section on logout
+            chatsSection.style.display = 'none'; // Hide chats section
+            chatWindowSection.style.display = 'none';
             ingestStreamSection.style.display = 'none'; // Hide ingest stream section
             // Clear previous messages and document list
             uploadMessage.textContent = '';
             authMessage.textContent = '';
             documentsList.innerHTML = ''; // Clear documents list
             documentsMessage.textContent = ''; // Clear documents message
+            chatsList.innerHTML = '';
 
             // Also stop and clear ingest stream display
             if (ingestAbortController) {
                 ingestAbortController.abort();
+            }
+            if (chatAbortController) {
+                chatAbortController.abort();
             }
             ingestEventsOutput.textContent = '';
             ingestStatusDisplay.textContent = 'Idle';
@@ -478,6 +694,22 @@ uploadButton.addEventListener('click', async () => {
 startIngestButton.addEventListener('click', startIngestStream);
 stopIngestButton.addEventListener('click', stopIngestStream);
 
+// Chat event listeners
+createChatButton.addEventListener('click', createChat);
+backToChatsButton.addEventListener('click', () => {
+    chatWindowSection.style.display = 'none';
+    chatsSection.style.display = 'block';
+    documentsSection.style.display = 'block';
+    uploadSection.style.display = 'block';
+    ingestStreamSection.style.display = 'block';
+    fetchChats();
+});
+chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (msg) startChatStream(msg);
+});
+
 // Check for existing token on page load
 document.addEventListener('DOMContentLoaded', () => {
     const storedToken = localStorage.getItem('authToken');
@@ -486,13 +718,20 @@ document.addEventListener('DOMContentLoaded', () => {
         authSection.style.display = 'none';
         uploadSection.style.display = 'block';
         documentsSection.style.display = 'block'; // Show documents section
+        chatsSection.style.display = 'block'; // Show chats section
         ingestStreamSection.style.display = 'block'; // Show ingest stream section
         fetchDocuments(); // Fetch documents on page load if logged in
+        fetchChats(); // Fetch chats on page load
     } else {
         authSection.style.display = 'block';
         uploadSection.style.display = 'none';
         documentsSection.style.display = 'none';
+        chatsSection.style.display = 'none';
+        chatWindowSection.style.display = 'none';
         ingestStreamSection.style.display = 'none';
     }
 });
+
+// Global openChat for button onclick
+window.openChat = openChat;
 

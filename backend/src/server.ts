@@ -1,7 +1,7 @@
 import app from '@/app.js';
 import { connectDb } from '@configs/database.js';
-import Logger from '@utils/logger.js';
 import { connectS3 } from '@configs/s3.js';
+import Logger from '@utils/logger.js';
 
 const PORT = process.env.PORT || '3000';
 

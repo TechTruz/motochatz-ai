@@ -676,8 +676,6 @@ Get messages from specific chat session.
         - `sort=<string>` (optional, default to `-createdAt`)
             - `createdAt`
             - `-createdAt` (default)
-            - `updatedAt`
-            - `-updatedAt`
 - Headers:
     - `Authorization: Bearer <string>`
 
@@ -693,12 +691,11 @@ Get messages from specific chat session.
         "data": [
             {
                 "messageId": <string>,
-                "role": "ASSISTANT" | {
-                    "userId": <string>,
-                    "userFirstName": <string>,
-                    "userLastName": <string> | null
-                },
-                "message": <string>,
+                "role": "USER" | "ASSISTANT",
+                "userId": <string> | null,
+                "userFirstName": <string> | null,
+                "userLastName": <string> | null
+                "content": <string>,
                 "referencedDocuments": [
                     {
                         "documentId": <string>,
@@ -714,9 +711,9 @@ Get messages from specific chat session.
         "pagination": {
             "currentRecords": <number>,
             "totalRecords": <number>,
-            "latestCursor": <string>,
-            "oldestCursor": <string>,
-            "sort": "createdAt" | "-createdAt" | "updatedAt" | "-updatedAt",
+            "latestCursor": <string> | null,
+            "oldestCursor": <string> | null,
+            "sort": "createdAt" | "-createdAt",
             "hasNextPage": <boolean>,
             "hasPrevPage": <boolean>
         }
@@ -741,19 +738,21 @@ Get messages from specific chat session.
         "data": [
             {
                 "messageId": "6970755dad814745c68ce5b0",
-                "role": {
-                    "userId": "6970756ee3d1d377ce8ce5b0",
-                    "userFirstName": "John",
-                    "userLastName": "Doe"
-                },
-                "message": "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual.",
+                "role": "USER",
+                "userId": "6970756ee3d1d377ce8ce5b0",
+                "userFirstName": "John",
+                "userLastName": "Doe"
+                "content": "Engine warning light is on. Car feels sluggish and fuel consumption is higher than usual.",
                 "createdAt": "2026-01-21T06:51:46.826Z",
                 "updatedAt": "2026-01-21T06:51:46.826Z"
             },
             {
                 "messageId": "6970764e37d24577fe8ce5b0",
                 "role": "ASSISTANT",
-                "message": "Alright, let’s narrow this down step by step.\nBased on the symptoms (check engine light, low power, high fuel usage) on a Toyota Avanza 2019, the most common causes are:\n1. Faulty oxygen (O2) sensor\nThis causes incorrect air–fuel mixture readings, leading to rich fuel conditions.\n2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.",
+                "userId": null,
+                "userFirstName": null,
+                "userLastName": null,
+                "content": "Alright, let’s narrow this down step by step.\nBased on the symptoms (check engine light, low power, high fuel usage) on a Toyota Avanza 2019, the most common causes are:\n1. Faulty oxygen (O2) sensor\nThis causes incorrect air–fuel mixture readings, leading to rich fuel conditions.\n2. Dirty or failing Mass Air Flow (MAF) sensor\nA contaminated MAF can miscalculate incoming air, reducing engine efficiency.\n3. Ignition issues (spark plugs or coils)\nWeak ignition can cause incomplete combustion.",
                 "referencedDocuments": [
                     {
                         "documentId": "56fc40f9d735c28df206d029",
@@ -877,7 +876,6 @@ Send a message to assistant (SSE).
     - `message`
         - `"id: <string>\n"`
         - `"data: { "content": <string>, "timestamp": <date> }\n\n"`
-            > stream ends with `"data: [DONE]\n\n"`
 
 #### Example
 
