@@ -14,10 +14,13 @@ Dokumentasi singkat untuk menjalankan frontend menggunakan Docker.
 cd frontend
 
 # 2. Copy environment file
-cp .env.example .env
+cp .env.example .env.docker
 
-# 3. Jalankan Docker
-docker-compose up -d frontend-dev
+# 3. Edit .env.docker dan isi VITE_API_BASE_URL
+# VITE_API_BASE_URL=http://localhost:8080
+
+# 4. Jalankan Docker
+docker compose up -d --build
 ```
 
 **Akses aplikasi**: http://localhost:5173
@@ -28,24 +31,24 @@ docker-compose up -d frontend-dev
 
 ```bash
 # Start
-docker-compose up -d frontend-dev
+docker compose up -d
 
 # Stop
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs -f frontend-dev
+docker compose logs -f frontend-dev
 
 # Restart
-docker-compose restart frontend-dev
+docker compose restart frontend-dev
 
 # Rebuild (jika ada perubahan)
-docker-compose up -d --build frontend-dev
+docker compose up -d --build
 ```
 
 ## 🔧 Environment Variables
 
-Edit file `.env`:
+Edit file `.env.docker`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080
@@ -64,13 +67,13 @@ taskkill /F /PID <PID>
 
 **Container tidak jalan:**
 ```bash
-docker-compose down
-docker-compose up -d --build frontend-dev
+docker compose down
+docker compose up -d --build
 ```
 
 **Hot reload tidak jalan:**
 ```bash
-docker-compose restart frontend-dev
+docker compose restart frontend-dev
 ```
 
 ---
