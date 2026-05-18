@@ -1,46 +1,69 @@
 import DocumentCard from "./DocumentCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { documentService } from "@/services/document.service";
+import { useAuthStore } from "@/stores/auth.store";
+import { useEffect, useState } from "react";
+import type { DocumentData, PaginationData } from "@/types/document.types";
+import { Button } from "@/components/ui/button";
 
-interface Document {
-  id: string;
-  fileName: string;
-  fileSize: string;
-  uploadDate: string;
-  status: "INDEXED" | "PROCESSING" | "FAILED";
+interface DocumentListProps {
+  refreshTrigger?: number;
 }
 
-const mockDocuments: Document[] = [
-  {
-    id: "1",
-    fileName: "Honda_CBR150R_Service_Manual_2023.pdf",
-    fileSize: "12.5 MB",
-    uploadDate: "10 Jan 2026",
-    status: "INDEXED",
-  },
-  {
-    id: "2",
-    fileName: "Yamaha_NMAX_Technical_Manual.pdf",
-    fileSize: "8.3 MB",
-    uploadDate: "09 Jan 2026",
-    status: "INDEXED",
-  },
-  {
-    id: "3",
-    fileName: "Kawasaki_Ninja_250_Maintenance_Guide.pdf",
-    fileSize: "15.7 MB",
-    uploadDate: "08 Jan 2026",
-    status: "INDEXED",
-  },
-  {
-    id: "4",
-    fileName: "Suzuki_GSX_R150_Workshop_Manual.pdf",
-    fileSize: "10.2 MB",
-    uploadDate: "07 Jan 2026",
-    status: "INDEXED",
-  },
-];
+export default function DocumentList({ refreshTrigger }: DocumentListProps) {
+  const [documents, setDocuments] = useState<DocumentData[]>([]);
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+  const { user } = useAuthStore();
 
-export default function DocumentList() {
+  const fetchDocuments = async () => {
+    if (!user?.garageId) {
+      setError("Garage ID tidak ditemukan");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await documentService.getDocuments({
+        garageId: user.garageId,
+        limit,
+        page: currentPage,
+        status: "ALL",
+        sort: "-createdAt",
+      });
+
+      setDocuments(response.data);
+      setPagination(response.pagination);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Gagal memuat dokumen";
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [currentPage, user?.garageId, refreshTrigger]);
+
+  const handleDelete = async (documentId: string) => {
+    if (confirm("Yakin ingin menghapus dokumen ini?")) {
+      try {
+        // TODO: Implement delete API call when available
+        alert("Fitur hapus belum tersedia");
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Gagal menghapus dokumen";
+        setError(message);
+      }
+    }
+  };
+
   return (
     <Card className="border-gray-800 bg-[#0F1729]">
       <CardHeader>
@@ -48,23 +71,68 @@ export default function DocumentList() {
           <CardTitle className="text-xl text-white">
             Dokumen Terindeks
           </CardTitle>
-          <span className="text-sm text-gray-400">
-            {mockDocuments.length} dokumen
-          </span>
+          {pagination && (
+            <span className="text-sm text-gray-400">
+              {pagination.totalRecords} dokumen
+            </span>
+          )}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {mockDocuments.map((doc) => (
-            <DocumentCard
-              key={doc.id}
-              fileName={doc.fileName}
-              fileSize={doc.fileSize}
-              uploadDate={doc.uploadDate}
-              status={doc.status}
-            />
-          ))}
-        </div>
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-900/20 p-4 text-red-400">
+            {error}
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <p className="text-gray-400">Memuat dokumen...</p>
+          </div>
+        ) : documents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <p className="mb-2 text-gray-400">Belum ada dokumen</p>
+            <p className="text-sm text-gray-500">
+              Mulai dengan mengupload dokumen baru
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-4">
+              {documents.map((doc) => (
+                <DocumentCard
+                  key={doc.documentId}
+                  {...doc}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+
+            {pagination && pagination.totalPage > 1 && (
+              <div className="mt-6 flex items-center justify-between">
+                <Button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={!pagination.hasPrevPage}
+                  variant="outline"
+                  className="border-gray-700 text-gray-300 hover:text-white"
+                >
+                  Sebelumnya
+                </Button>
+                <span className="text-sm text-gray-400">
+                  Halaman {pagination.currentPage} dari {pagination.totalPage}
+                </span>
+                <Button
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  disabled={!pagination.hasNextPage}
+                  variant="outline"
+                  className="border-gray-700 text-gray-300 hover:text-white"
+                >
+                  Berikutnya
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </CardContent>
     </Card>
   );
