@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AccountDialog } from "@/components/AccountDialog";
 
 export function NavSecondary({
   items,
@@ -38,70 +39,80 @@ export function NavSecondary({
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const { isAuthenticated } = useAuthStore();
   const { mutate: logout } = useLogout();
+  const [accountDialogOpen, setAccountDialogOpen] = React.useState(false);
 
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              {item.title === "Settings" ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton className="cursor-pointer">
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="min-w-56 rounded-lg"
-                    side="top"
-                    align="start"
-                    sideOffset={4}
-                  >
-                    {isAuthenticated ? (
-                      <>
+    <>
+      <AccountDialog
+        open={accountDialogOpen}
+        onOpenChange={setAccountDialogOpen}
+      />
+      <SidebarGroup {...props}>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {items.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                {item.title === "Settings" ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton className="cursor-pointer">
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="min-w-56 rounded-lg"
+                      side="top"
+                      align="start"
+                      sideOffset={4}
+                    >
+                      {isAuthenticated ? (
+                        <>
+                          <DropdownMenuGroup>
+                            <DropdownMenuItem
+                              onClick={() => setAccountDialogOpen(true)}
+                              className="cursor-pointer"
+                            >
+                              <IconUserCircle />
+                              Account
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => logout()}
+                            className="cursor-pointer"
+                          >
+                            <IconLogout />
+                            Log out
+                          </DropdownMenuItem>
+                        </>
+                      ) : (
                         <DropdownMenuGroup>
                           <DropdownMenuItem className="cursor-pointer">
-                            <IconUserCircle />
-                            Account
+                            <IconHelp />
+                            Help & Support
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            <IconInfoCircle />
+                            About
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => logout()}
-                          className="cursor-pointer"
-                        >
-                          <IconLogout />
-                          Log out
-                        </DropdownMenuItem>
-                      </>
-                    ) : (
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <IconHelp />
-                          Help & Support
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <IconInfoCircle />
-                          About
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              )}
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </>
   );
 }
