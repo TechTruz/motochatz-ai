@@ -50,7 +50,9 @@ authenticatedAxiosInstance.interceptors.request.use(
 );
 
 authenticatedAxiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error: AxiosError<ApiErrorResponse>) => {
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
